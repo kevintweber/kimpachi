@@ -1,6 +1,6 @@
 package com.kevintweber.kimpachi.exception;
 
-public class InvalidPositionException extends RuntimeException {
+public class InvalidPositionException extends KimpachiException {
 
     public InvalidPositionException() {
     }

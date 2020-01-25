@@ -28,14 +28,17 @@ class PositionTest {
         Position test1 = Position.of(1, 2);
         Position test2 = Position.of(1, 2);
         Position test3 = Position.of(5, 5);
+        assertThat(test1.compareTo(null))
+                .as("Checking compareTo with null")
+                .isEqualTo(-1);
         assertThat(test1.compareTo(test2))
-                .as("Checking compareTo")
+                .as("Checking compareTo with equal position")
                 .isEqualTo(0);
         assertThat(test1.compareTo(test3))
-                .as("Checking compareTo")
+                .as("Checking compareTo with less position")
                 .isLessThan(0);
         assertThat(test3.compareTo(test1))
-                .as("Checking compareTo")
+                .as("Checking compareTo with greater position")
                 .isGreaterThan(0);
     }
 }

@@ -1,23 +1,23 @@
 package com.kevintweber.kimpachi.exception;
 
-public class ConfigurationException extends KimpachiException {
+public class IllegalMoveException extends KimpachiException {
 
-    public ConfigurationException() {
+    public IllegalMoveException() {
     }
 
-    public ConfigurationException(String message) {
+    public IllegalMoveException(String message) {
         super(message);
     }
 
-    public ConfigurationException(String message, Throwable cause) {
+    public IllegalMoveException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ConfigurationException(Throwable cause) {
+    public IllegalMoveException(Throwable cause) {
         super(cause);
     }
 
-    public ConfigurationException(
+    public IllegalMoveException(
             String message,
             Throwable cause,
             boolean enableSuppression,

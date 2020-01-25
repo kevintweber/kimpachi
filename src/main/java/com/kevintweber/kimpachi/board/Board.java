@@ -14,6 +14,8 @@ public final class Board {
     private final int size;
     private final Map<Position, Color> positions;
 
+    private static final Map<Integer, Board> EMPTY = new HashMap<>();
+
     private Board(
             final int size,
             @NonNull Map<Position, Color> positions) {
@@ -24,8 +26,12 @@ public final class Board {
         }
     }
 
-    public Board of(@NonNull Configuration configuration) {
+    public static Board empty(@NonNull Configuration configuration) {
         int boardSize = configuration.getBoardSize();
+        if (EMPTY.containsKey(boardSize)) {
+            return EMPTY.get(boardSize);
+        }
+
         Map<Position, Color> positionMap = new HashMap<>();
         for (int y = 1; y <= boardSize; y++) {
             for (int x = 1; x <= boardSize; x++) {
@@ -33,7 +39,14 @@ public final class Board {
             }
         }
 
-        return new Board(boardSize, positionMap);
+        Board empty = new Board(boardSize, positionMap);
+        EMPTY.put(boardSize, empty);
+
+        return empty;
+    }
+
+    public Board clear(@NonNull Position position) {
+        return withMove(Move.empty(position));
     }
 
     public int getSize() {
@@ -64,18 +77,18 @@ public final class Board {
                 y <= size;
     }
 
-    public Board withColor(@NonNull Position position, @NonNull Color color) {
-        if (!isValid(position)) {
-            throw new InvalidPositionException("Position is not on the board: " + position);
+    public Board withMove(@NonNull Move move) {
+        if (!isValid(move.getPosition())) {
+            throw new InvalidPositionException("Position is not on the board: " + move);
         }
 
-        Color currentColor = getColor(position);
-        if (currentColor.equals(color)) {
+        Color currentColor = getColor(move.getPosition());
+        if (currentColor.equals(move.getColor())) {
             return this;
         }
 
         Map<Position, Color> newPositions = new HashMap<>(positions);
-        newPositions.replace(position, color);
+        newPositions.replace(move.getPosition(), move.getColor());
 
         return new Board(size, newPositions);
     }
