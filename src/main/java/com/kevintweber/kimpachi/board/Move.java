@@ -25,8 +25,4 @@ public final class Move {
 
         return new Move(color, position);
     }
-
-    static Move empty(@NonNull Position position) {
-        return new Move(Color.Empty, position);
-    }
 }

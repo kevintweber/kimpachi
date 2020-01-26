@@ -37,4 +37,12 @@ public class NormalTurn implements Turn {
     public boolean isPass() {
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "NormalTurn{" +
+                "move=" + move +
+                ", prisoners=" + prisoners +
+                '}';
+    }
 }

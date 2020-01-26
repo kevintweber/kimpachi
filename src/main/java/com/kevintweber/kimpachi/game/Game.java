@@ -1,86 +1,72 @@
 package com.kevintweber.kimpachi.game;
 
-import com.kevintweber.kimpachi.board.Board;
-import com.kevintweber.kimpachi.board.Color;
+import com.kevintweber.kimpachi.board.BoardManager;
 import com.kevintweber.kimpachi.board.Move;
 import com.kevintweber.kimpachi.exception.IllegalMoveException;
+import com.kevintweber.kimpachi.game.turn.NormalTurn;
+import com.kevintweber.kimpachi.game.turn.PassTurn;
 import com.kevintweber.kimpachi.game.turn.Turn;
+import com.kevintweber.kimpachi.game.turn.TurnManager;
 import com.kevintweber.kimpachi.rules.Rules;
 import lombok.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.UUID;
 
 public final class Game {
 
-    private final Set<Integer> boardHashes;
-    private final Configuration configuration;
+    private static final Logger logger = LoggerFactory.getLogger(Game.class);
+
     private final UUID gameId;
+    private final BoardManager boardManager;
+    private final Configuration configuration;
     private final Rules rules;
-    private final Deque<Turn> turns;
-    private Board board;
+    private final TurnManager turnManager;
 
     public Game(
+            @NonNull UUID gameId,
+            @NonNull BoardManager boardManager,
             @NonNull Configuration configuration,
-            @NonNull Rules rules) {
-        this.boardHashes = new HashSet<>();
+            @NonNull Rules rules,
+            @NonNull TurnManager turnManager) {
+        this.gameId = gameId;
+        this.boardManager = boardManager;
         this.configuration = configuration;
-        this.gameId = UUID.randomUUID();
         this.rules = rules;
-        this.turns = new LinkedList<>();
-        this.board = Board.empty(configuration);
+        this.turnManager = turnManager;
     }
 
-    public void addMove(@NonNull Move move) {
-        if (!getNextMoveColor().equals(move.getColor())) {
-            throw new IllegalMoveException("Illegal color is moving: " + move);
+    public void addMove(Move move) {
+        logger.info("Add move: {}", move);
+        if (!boardManager.isMoveValid(move)) {
+            throw new IllegalMoveException("Move is illegal: " + move);
         }
 
-        Turn turn = rules.move(configuration, boardHashes, board, move);
+        if (!rules.isMoveValid(move, boardManager.getBoard())) {
+            throw new IllegalMoveException("Move is illegal: " + move);
+        }
 
-        turns.addLast(turn);
-    }
+        Turn turn;
+        if (move == null) {
+            turn = new PassTurn();
+        } else {
+            Prisoners prisoners = boardManager.getPrisoners(move);
+            turn = new NormalTurn(move, prisoners);
+        }
 
-    public Configuration getConfiguration() {
-        return configuration;
+        logger.debug("Turn={}", turn);
+
+        boardManager.addTurn(turn);
+        turnManager.addTurn(turn);
     }
 
     public UUID getGameId() {
         return gameId;
     }
 
-    public Deque<Turn> getTurns() {
-        return new LinkedList<>(turns);
-    }
-
-    public Color getNextMoveColor() {
-        if (turns.isEmpty()) {
-            return Color.Black;
-        }
-
-        Color previousMoveColor = turns.peekLast().getColor();
-        if (previousMoveColor.equals(Color.Black)) {
-            return Color.White;
-        }
-
-        return Color.Black;
-    }
-
-    public boolean isGameOver() {
-        if (turns.size() < 2) {
-            return false;
-        }
-
-        Turn lastMove = turns.removeLast();
-        if (!lastMove.isPass()) {
-            turns.addLast(lastMove);
-
-            return false;
-        }
-
-        Turn secondToLastMove = turns.getLast();
-        turns.addLast(lastMove);
-
-        return secondToLastMove.isPass();
+    public Configuration getConfiguration() {
+        return configuration;
     }
 
     @Override
@@ -102,7 +88,6 @@ public final class Game {
     public String toString() {
         return "Game{" +
                 "gameId=" + gameId +
-                ", configuration=" + configuration +
                 '}';
     }
 }

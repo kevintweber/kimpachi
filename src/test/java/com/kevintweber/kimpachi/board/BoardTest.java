@@ -85,7 +85,7 @@ class BoardTest {
                 .as("Checking immutability of adding same color")
                 .isSameAs(nextBoard);
 
-        Board nextBoard3 = nextBoard.withMove(Move.empty(position));
+        Board nextBoard3 = nextBoard.clear(position);
         assertThat(nextBoard3)
                 .as("Checking cyclic immutablility")
                 .isNotSameAs(board)

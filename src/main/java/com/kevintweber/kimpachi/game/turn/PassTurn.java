@@ -25,5 +25,9 @@ public class PassTurn implements Turn {
     public boolean isPass() {
         return true;
     }
-    
+
+    @Override
+    public String toString() {
+        return "PassTurn{}";
+    }
 }

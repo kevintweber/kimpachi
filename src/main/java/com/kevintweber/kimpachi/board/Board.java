@@ -46,7 +46,12 @@ public final class Board {
     }
 
     public Board clear(@NonNull Position position) {
-        return withMove(Move.empty(position));
+        Color color = getColor(position);
+        if (color.equals(Color.Empty)) {
+            return this;
+        }
+
+        return modifyPosition(position, Color.Empty);
     }
 
     public int getSize() {
@@ -87,8 +92,12 @@ public final class Board {
             return this;
         }
 
+        return modifyPosition(move.getPosition(), move.getColor());
+    }
+
+    private Board modifyPosition(Position position, Color color) {
         Map<Position, Color> newPositions = new HashMap<>(positions);
-        newPositions.replace(move.getPosition(), move.getColor());
+        newPositions.replace(position, color);
 
         return new Board(size, newPositions);
     }
