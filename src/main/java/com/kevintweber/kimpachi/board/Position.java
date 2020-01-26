@@ -8,6 +8,8 @@ import java.util.Comparator;
 @Data
 public final class Position implements Comparable<Position> {
 
+    private static String sgfCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
     private final int x;
     private final int y;
 
@@ -22,6 +24,10 @@ public final class Position implements Comparable<Position> {
         }
 
         return new Position(x, y);
+    }
+
+    public String toSgf() {
+        return sgfCharacters.substring(x - 1, x) + sgfCharacters.substring(y - 1, y);
     }
 
     @Override

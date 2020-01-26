@@ -1,6 +1,7 @@
-package com.kevintweber.kimpachi.game.turn;
+package com.kevintweber.kimpachi.game;
 
 import com.kevintweber.kimpachi.board.Color;
+import com.kevintweber.kimpachi.exception.IllegalMoveException;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
@@ -14,6 +15,10 @@ public final class TurnManager {
 
     private final Deque<Turn> turns;
 
+    public TurnManager() {
+        this.turns = new LinkedList<>();
+    }
+
     public TurnManager(@NonNull Deque<Turn> turns) {
         this.turns = turns;
     }
@@ -23,6 +28,11 @@ public final class TurnManager {
     }
 
     public void addTurn(@NonNull Turn turn) {
+        Color nextMoveColor = getNextMoveColor();
+        if (!turn.getColor().equals(nextMoveColor)) {
+            throw new IllegalMoveException("Out of turn. Color must be " + nextMoveColor.toString());
+        }
+
         this.turns.addLast(turn);
     }
 
@@ -31,7 +41,7 @@ public final class TurnManager {
             return Color.Black;
         }
 
-        Color previousMoveColor = turns.peekLast().getColor();
+        Color previousMoveColor = turns.getLast().getColor();
         if (previousMoveColor.equals(Color.Black)) {
             return Color.White;
         }
@@ -55,5 +65,14 @@ public final class TurnManager {
         turns.addLast(lastMove);
 
         return secondToLastMove.isPass();
+    }
+
+    public String toSgf() {
+        StringBuilder sb = new StringBuilder();
+        for (Turn turn : turns) {
+            sb.append(turn.toSgf());
+        }
+
+        return sb.toString();
     }
 }

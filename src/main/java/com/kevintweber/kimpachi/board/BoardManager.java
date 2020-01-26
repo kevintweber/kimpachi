@@ -1,8 +1,9 @@
 package com.kevintweber.kimpachi.board;
 
 import com.kevintweber.kimpachi.exception.InvalidPositionException;
+import com.kevintweber.kimpachi.game.Configuration;
 import com.kevintweber.kimpachi.game.Prisoners;
-import com.kevintweber.kimpachi.game.turn.Turn;
+import com.kevintweber.kimpachi.game.Turn;
 import lombok.NonNull;
 
 import java.util.HashSet;
@@ -13,11 +14,21 @@ public final class BoardManager {
     private Board board;
     private final Set<Integer> boardHashes;
 
-    public BoardManager(
+    private BoardManager(
             @NonNull Board board,
             @NonNull Set<Integer> boardHashes) {
         this.board = board;
         this.boardHashes = new HashSet<>(boardHashes);
+    }
+
+    public static BoardManager newBoard(@NonNull Configuration configuration) {
+        return new BoardManager(Board.empty(configuration), new HashSet<>());
+    }
+
+    public static BoardManager inProgressBoard(
+            @NonNull Board board,
+            @NonNull Set<Integer> boardHashes) {
+        return new BoardManager(board, boardHashes);
     }
 
     public Board getBoard() {
@@ -34,8 +45,8 @@ public final class BoardManager {
         // Remove own color prisoners
     }
 
-    public Prisoners getPrisoners(Move move) {
-        if (move == null) {
+    public Prisoners getPrisoners(@NonNull Move move) {
+        if (move.isPassMove()) {
             return Prisoners.empty();
         }
 
@@ -44,8 +55,8 @@ public final class BoardManager {
         return Prisoners.empty();
     }
 
-    public boolean isMoveValid(Move move) {
-        if (move == null) {
+    public boolean isMoveValid(@NonNull Move move) {
+        if (move.isPassMove()) {
             return true;
         }
 

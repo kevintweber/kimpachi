@@ -1,11 +1,14 @@
 package com.kevintweber.kimpachi.board;
 
+import com.kevintweber.kimpachi.exception.ConfigurationException;
 import com.kevintweber.kimpachi.exception.InvalidPositionException;
 import com.kevintweber.kimpachi.game.Configuration;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @EqualsAndHashCode
@@ -41,6 +44,35 @@ public final class Board {
 
         Board empty = new Board(boardSize, positionMap);
         EMPTY.put(boardSize, empty);
+
+        return empty;
+    }
+
+    public static Board of(@NonNull Configuration configuration) {
+        Board empty = Board.empty(configuration);
+        if (configuration.getHandicap() == 0) {
+            return empty;
+        }
+
+        List<Position> handicapPositions = new ArrayList<>();
+        switch (configuration.getBoardSize()) {
+            case 9:
+                break;
+
+            case 13:
+                break;
+
+            case 19:
+                handicapPositions.add(Position.of(4, 4));
+                break;
+
+            default:
+                throw new ConfigurationException("Illegal board size: " + configuration.getBoardSize());
+        }
+
+        for (int i = 0; i < configuration.getHandicap(); i++) {
+            empty = empty.withMove(Move.normalMove(Color.Black, handicapPositions.get(i)));
+        }
 
         return empty;
     }

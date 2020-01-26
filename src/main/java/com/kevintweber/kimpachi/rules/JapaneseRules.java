@@ -8,7 +8,7 @@ public final class JapaneseRules implements Rules {
 
     @Override
     public boolean isMoveValid(
-            Move move,
+            @NonNull Move move,
             @NonNull Board board) {
         return true;
     }
@@ -16,5 +16,11 @@ public final class JapaneseRules implements Rules {
     @Override
     public RuleSet getRuleSet() {
         return RuleSet.JapaneseRules;
+    }
+
+
+    @Override
+    public String toSgf() {
+        return "RU[Japanese]\n";
     }
 }

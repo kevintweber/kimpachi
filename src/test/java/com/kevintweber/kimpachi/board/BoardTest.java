@@ -65,7 +65,7 @@ class BoardTest {
                 .as("Checking position is not occupied")
                 .isFalse();
 
-        Move blackMove = Move.of(Color.Black, position);
+        Move blackMove = Move.normalMove(Color.Black, position);
         Board nextBoard = board.withMove(blackMove);
         assertThat(nextBoard)
                 .as("Checking boards are immutable")

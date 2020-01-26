@@ -6,8 +6,10 @@ import lombok.NonNull;
 
 public interface Rules {
 
-    boolean isMoveValid(Move move, @NonNull Board board);
+    boolean isMoveValid(@NonNull Move move, @NonNull Board board);
 
     RuleSet getRuleSet();
+
+    String toSgf();
 
 }

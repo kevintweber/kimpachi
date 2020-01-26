@@ -37,7 +37,15 @@ public final class Prisoners {
         return EMPTY;
     }
 
-    public int count(@NonNull Color color) {
+    public int countBlackPrisoners() {
+        return count(Color.Black);
+    }
+
+    public int countWhitePrisoners() {
+        return count(Color.White);
+    }
+
+    private int count(Color color) {
         if (color.equals(Color.Empty)) {
             throw new IllegalStateException("Prisoners cannot be empty color.");
         }

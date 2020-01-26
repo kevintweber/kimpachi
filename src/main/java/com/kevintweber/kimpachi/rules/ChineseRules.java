@@ -8,7 +8,7 @@ public final class ChineseRules implements Rules {
 
     @Override
     public boolean isMoveValid(
-            Move move,
+            @NonNull Move move,
             @NonNull Board board) {
         return true;
     }
@@ -16,5 +16,10 @@ public final class ChineseRules implements Rules {
     @Override
     public RuleSet getRuleSet() {
         return RuleSet.ChineseRules;
+    }
+
+    @Override
+    public String toSgf() {
+        return "RU[Chinese]\n";
     }
 }

@@ -24,6 +24,14 @@ class PositionTest {
     }
 
     @Test
+    void toSgf() {
+        Position test = Position.of(1, 2);
+        assertThat(test.toSgf())
+                .as("Checking SGF output")
+                .isEqualTo("ab");
+    }
+
+    @Test
     void compareTo() {
         Position test1 = Position.of(1, 2);
         Position test2 = Position.of(1, 2);
