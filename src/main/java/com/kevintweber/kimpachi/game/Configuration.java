@@ -4,18 +4,26 @@ import com.kevintweber.kimpachi.exception.ConfigurationException;
 import lombok.Data;
 import lombok.NonNull;
 
+import java.math.BigDecimal;
+
 @Data
 public final class Configuration {
 
     private final int boardSize;
+    private final int handicap;
+    private final BigDecimal komi;
     private final String blackPlayer;
     private final String whitePlayer;
 
     private Configuration(
             int boardSize,
+            int handicap,
+            @NonNull BigDecimal komi,
             @NonNull String blackPlayer,
             @NonNull String whitePlayer) {
         this.boardSize = boardSize;
+        this.handicap = handicap;
+        this.komi = komi;
         this.blackPlayer = blackPlayer;
         this.whitePlayer = whitePlayer;
     }
@@ -23,6 +31,8 @@ public final class Configuration {
     public static class Builder {
 
         private int builderBoardSize = 19;
+        private int builderHandicap = 0;
+        private BigDecimal builderKomi = new BigDecimal("6.5");
         private String builderBlackPlayer = "<Black>";
         private String builderWhitePlayer = "<White>";
 
@@ -32,7 +42,7 @@ public final class Configuration {
         public Builder withBoardSize(int boardSize) {
             switch (boardSize) {
                 case 9:
-                case 15:
+                case 13:
                 case 19:
                     // Allowed so do nothing.
                     break;
@@ -42,6 +52,22 @@ public final class Configuration {
             }
 
             this.builderBoardSize = boardSize;
+
+            return this;
+        }
+
+        public Builder withHandicap(int handicap) {
+            if (handicap < 0) {
+                throw new ConfigurationException("Illegal handicap: " + handicap);
+            }
+
+            this.builderHandicap = handicap;
+
+            return this;
+        }
+
+        public Builder withKomi(@NonNull BigDecimal komi) {
+            this.builderKomi = komi;
 
             return this;
         }
@@ -61,6 +87,8 @@ public final class Configuration {
         public Configuration build() {
             return new Configuration(
                     builderBoardSize,
+                    builderHandicap,
+                    builderKomi,
                     builderBlackPlayer,
                     builderWhitePlayer
             );

@@ -4,24 +4,40 @@ import com.kevintweber.kimpachi.board.Board;
 import com.kevintweber.kimpachi.board.Color;
 import com.kevintweber.kimpachi.board.Move;
 import com.kevintweber.kimpachi.exception.IllegalMoveException;
+import com.kevintweber.kimpachi.game.turn.Turn;
+import com.kevintweber.kimpachi.rules.Rules;
 import lombok.NonNull;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.UUID;
+import java.util.*;
 
 public final class Game {
 
+    private final Set<Integer> boardHashes;
     private final Configuration configuration;
     private final UUID gameId;
-    private final Deque<Move> moves;
+    private final Rules rules;
+    private final Deque<Turn> turns;
     private Board board;
 
-    public Game(@NonNull Configuration configuration) {
+    public Game(
+            @NonNull Configuration configuration,
+            @NonNull Rules rules) {
+        this.boardHashes = new HashSet<>();
         this.configuration = configuration;
         this.gameId = UUID.randomUUID();
-        this.moves = new LinkedList<>();
+        this.rules = rules;
+        this.turns = new LinkedList<>();
         this.board = Board.empty(configuration);
+    }
+
+    public void addMove(@NonNull Move move) {
+        if (!getNextMoveColor().equals(move.getColor())) {
+            throw new IllegalMoveException("Illegal color is moving: " + move);
+        }
+
+        Turn turn = rules.move(configuration, boardHashes, board, move);
+
+        turns.addLast(turn);
     }
 
     public Configuration getConfiguration() {
@@ -32,34 +48,39 @@ public final class Game {
         return gameId;
     }
 
-    public Deque<Move> getMoves() {
-        return new LinkedList<>(moves);
-    }
-
-    public void addMove(@NonNull Move move) {
-        if (!getNextMoveColor().equals(move.getColor())) {
-            throw new IllegalMoveException("Illegal color is moving: " + move);
-        }
-
-        if (board.isOccupied(move.getPosition())) {
-            throw new IllegalMoveException("Position is occupied: " + move);
-        }
-
-        moves.addLast(move);
-        board = board.withMove(move);
+    public Deque<Turn> getTurns() {
+        return new LinkedList<>(turns);
     }
 
     public Color getNextMoveColor() {
-        if (moves.isEmpty()) {
+        if (turns.isEmpty()) {
             return Color.Black;
         }
 
-        Color previousMoveColor = moves.peekLast().getColor();
+        Color previousMoveColor = turns.peekLast().getColor();
         if (previousMoveColor.equals(Color.Black)) {
             return Color.White;
         }
 
         return Color.Black;
+    }
+
+    public boolean isGameOver() {
+        if (turns.size() < 2) {
+            return false;
+        }
+
+        Turn lastMove = turns.removeLast();
+        if (!lastMove.isPass()) {
+            turns.addLast(lastMove);
+
+            return false;
+        }
+
+        Turn secondToLastMove = turns.getLast();
+        turns.addLast(lastMove);
+
+        return secondToLastMove.isPass();
     }
 
     @Override
