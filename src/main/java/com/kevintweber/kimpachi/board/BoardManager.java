@@ -41,6 +41,8 @@ public final class BoardManager {
         }
 
         // Add stone
+        board = board.withMove(turn.getMove());
+
         // Remove opposite color prisoners
         // Remove own color prisoners
     }
@@ -68,7 +70,7 @@ public final class BoardManager {
 
             Board tempBoard = board.withMove(move);
 
-            return boardHashes.contains(tempBoard.hashCode());
+            return !boardHashes.contains(tempBoard.hashCode());
         } catch (InvalidPositionException e) {
             return false;
         }

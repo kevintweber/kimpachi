@@ -92,7 +92,7 @@ public final class Board {
 
     public Color getColor(@NonNull Position position) {
         if (!isValid(position)) {
-            throw new InvalidPositionException("Position is not on the board: " + position);
+            throw new InvalidPositionException("Position is not on the board: x=" + position.getX() + ";y=" + position.getY());
         }
 
         return positions.get(position);
@@ -132,6 +132,36 @@ public final class Board {
         newPositions.replace(position, color);
 
         return new Board(size, newPositions);
+    }
+
+    public void toStdOut() {
+        String header = "   ";
+        for (int i = 0; i < size; i++) {
+            header += Position.sgfCharacters.charAt(i) + " ";
+        }
+
+        System.out.println(header);
+
+        for (int y = 1; y <= size; y++) {
+            String row = Position.sgfCharacters.charAt(y - 1) + "  ";
+            for (int x = 1; x <= size; x++) {
+                switch (getColor(Position.of(x, y))) {
+                    case Empty:
+                        row += ". ";
+                        break;
+
+                    case Black:
+                        row += "X ";
+                        break;
+
+                    case White:
+                        row += "O ";
+                        break;
+                }
+            }
+
+            System.out.println(row);
+        }
     }
 
     @Override

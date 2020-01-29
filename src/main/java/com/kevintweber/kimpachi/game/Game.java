@@ -7,6 +7,7 @@ import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Deque;
 import java.util.UUID;
 
 public final class Game {
@@ -66,8 +67,6 @@ public final class Game {
                 boardManager.getPrisoners(move)
         );
 
-        logger.debug("Turn={}", turn);
-
         boardManager.addTurn(turn);
         turnManager.addTurn(turn);
     }
@@ -80,11 +79,17 @@ public final class Game {
         return configuration;
     }
 
-    public String toSgf() {
-        StringBuilder sb = new StringBuilder(configuration.toSgf());
-        sb.append(turnManager.toSgf());
+    public Deque<Turn> getTurns() {
+        return turnManager.getTurns();
+    }
 
-        return sb.toString();
+    public String toSgf() {
+        return configuration.toSgf() +
+                turnManager.toSgf();
+    }
+
+    public void toStdOut() {
+        boardManager.getBoard().toStdOut();
     }
 
     @Override

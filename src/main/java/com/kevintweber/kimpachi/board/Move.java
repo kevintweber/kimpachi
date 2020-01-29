@@ -1,6 +1,8 @@
 package com.kevintweber.kimpachi.board;
 
 import com.kevintweber.kimpachi.exception.IllegalMoveException;
+import com.kevintweber.kimpachi.exception.SgfException;
+import com.kevintweber.kimpachi.utilities.SgfToken;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -38,8 +40,31 @@ public final class Move {
         return new Move(color, null, true);
     }
 
-    public String toSgf() {
-        String result = ";";
+    public static Move sgf(@NonNull SgfToken token) {
+        Color color;
+        switch (token.getKey()) {
+            case "B":
+                color = Color.Black;
+                break;
+
+            case "W":
+                color = Color.White;
+                break;
+
+            default:
+                throw new SgfException("Token is not a move key. Token=" + token);
+        }
+
+        if (token.getValue().isBlank()) {
+            return passMove(color);
+        }
+
+        return normalMove(color, Position.fromSgf(token.getValue()));
+    }
+
+    @Override
+    public String toString() {
+        String result = "";
         if (color.equals(Color.Black)) {
             result += "B[";
         } else {
@@ -50,6 +75,6 @@ public final class Move {
             return result + "]";
         }
 
-        return result + position.toSgf() + "]";
+        return result + position + "]";
     }
 }

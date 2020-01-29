@@ -37,6 +37,6 @@ public final class Turn {
     }
 
     public String toSgf() {
-        return move.toSgf();
+        return ";" + move.toString();
     }
 }
