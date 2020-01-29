@@ -14,19 +14,44 @@ import java.util.Map;
 @EqualsAndHashCode
 public final class Board {
 
-    private final int size;
-    private final Map<Position, Color> positions;
+    private final Area blackArea;
+    private final Area whiteArea;
+    private final Area komi;
 
     private static final Map<Integer, Board> EMPTY = new HashMap<>();
 
     private Board(
-            final int size,
-            @NonNull Map<Position, Color> positions) {
-        this.size = size;
-        this.positions = positions;
-        if (positions.size() != (size * size)) {
-            throw new IllegalStateException("Board has invalid number of positions: " + positions.size());
+            @NonNull Area blackArea,
+            @NonNull Area whiteArea) {
+        if (blackArea.getBoardSize() != whiteArea.getBoardSize()) {
+            throw new ConfigurationException("Each area must have the same board size.");
         }
+
+        if (!isValidBoardSize(blackArea.getBoardSize())) {
+            throw new ConfigurationException("Invalid board size: " + blackArea.getBoardSize());
+        }
+
+        if (blackArea.intersection(whiteArea).getSize() != 0) {
+            throw new ConfigurationException("Black and white areas must not overlap.");
+        }
+
+        this.blackArea = Area.of(blackArea);
+        this.whiteArea = Area.of(whiteArea);
+
+        Area.Builder areaBuilder = new Area.Builder(blackArea.getBoardSize());
+        if (blackArea.getBoardSize() == 19) {
+            areaBuilder.addPosition(Position.of(4, 4));
+            areaBuilder.addPosition(Position.of(10, 4));
+            areaBuilder.addPosition(Position.of(16, 4));
+            areaBuilder.addPosition(Position.of(4, 10));
+            areaBuilder.addPosition(Position.of(10, 10));
+            areaBuilder.addPosition(Position.of(16, 10));
+            areaBuilder.addPosition(Position.of(4, 16));
+            areaBuilder.addPosition(Position.of(10, 16));
+            areaBuilder.addPosition(Position.of(16, 16));
+        }
+
+        this.komi = areaBuilder.build();
     }
 
     public static Board empty(@NonNull Configuration configuration) {
@@ -35,17 +60,14 @@ public final class Board {
             return EMPTY.get(boardSize);
         }
 
-        Map<Position, Color> positionMap = new HashMap<>();
-        for (int y = 1; y <= boardSize; y++) {
-            for (int x = 1; x <= boardSize; x++) {
-                positionMap.put(Position.of(x, y), Color.Empty);
-            }
-        }
-
-        Board empty = new Board(boardSize, positionMap);
+        Board empty = new Board(Area.empty(boardSize), Area.empty(boardSize));
         EMPTY.put(boardSize, empty);
 
         return empty;
+    }
+
+    public static Board of(@NonNull Board otherBoard) {
+        return new Board(otherBoard.blackArea, otherBoard.whiteArea);
     }
 
     public static Board of(@NonNull Configuration configuration) {
@@ -54,6 +76,7 @@ public final class Board {
             return empty;
         }
 
+        Board handicapBoard = Board.of(empty);
         List<Position> handicapPositions = new ArrayList<>();
         switch (configuration.getBoardSize()) {
             case 9:
@@ -71,10 +94,10 @@ public final class Board {
         }
 
         for (int i = 0; i < configuration.getHandicap(); i++) {
-            empty = empty.withMove(Move.normalMove(Color.Black, handicapPositions.get(i)));
+            handicapBoard = handicapBoard.withMove(Move.normalMove(Color.Black, handicapPositions.get(i)));
         }
 
-        return empty;
+        return handicapBoard;
     }
 
     public Board clear(@NonNull Position position) {
@@ -87,15 +110,27 @@ public final class Board {
     }
 
     public int getSize() {
-        return size;
+        return blackArea.getBoardSize();
     }
 
     public Color getColor(@NonNull Position position) {
-        if (!isValid(position)) {
+        if (!isOnBoard(position)) {
             throw new InvalidPositionException("Position is not on the board: x=" + position.getX() + ";y=" + position.getY());
         }
 
-        return positions.get(position);
+        if (blackArea.contains(position)) {
+            return Color.Black;
+        }
+
+        if (whiteArea.contains(position)) {
+            return Color.White;
+        }
+
+        return Color.Empty;
+    }
+
+    public boolean isKomi(@NonNull Position position) {
+        return komi.contains(position);
     }
 
     public boolean isOccupied(@NonNull Position position) {
@@ -104,9 +139,10 @@ public final class Board {
         return !color.equals(Color.Empty);
     }
 
-    public boolean isValid(@NonNull Position position) {
+    public boolean isOnBoard(@NonNull Position position) {
         int x = position.getX();
         int y = position.getY();
+        int size = blackArea.getBoardSize();
 
         return x > 0 &&
                 y > 0 &&
@@ -114,8 +150,12 @@ public final class Board {
                 y <= size;
     }
 
+    public static boolean isValidBoardSize(int boardSize) {
+        return boardSize == 19 || boardSize == 13 || boardSize == 9;
+    }
+
     public Board withMove(@NonNull Move move) {
-        if (!isValid(move.getPosition())) {
+        if (!isOnBoard(move.getPosition())) {
             throw new InvalidPositionException("Position is not on the board: " + move);
         }
 
@@ -128,26 +168,37 @@ public final class Board {
     }
 
     private Board modifyPosition(Position position, Color color) {
-        Map<Position, Color> newPositions = new HashMap<>(positions);
-        newPositions.replace(position, color);
+        if (color.equals(Color.Empty)) {
+            return new Board(blackArea.without(position), whiteArea.without(position));
+        }
 
-        return new Board(size, newPositions);
+        if (color.equals(Color.Black)) {
+            return new Board(blackArea.with(position), whiteArea.without(position));
+        }
+
+        return new Board(blackArea.without(position), whiteArea.with(position));
     }
 
     public void toStdOut() {
         String header = "   ";
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < blackArea.getBoardSize(); i++) {
             header += Position.sgfCharacters.charAt(i) + " ";
         }
 
         System.out.println(header);
 
-        for (int y = 1; y <= size; y++) {
+        for (int y = 1; y <= blackArea.getBoardSize(); y++) {
             String row = Position.sgfCharacters.charAt(y - 1) + "  ";
-            for (int x = 1; x <= size; x++) {
-                switch (getColor(Position.of(x, y))) {
+            for (int x = 1; x <= blackArea.getBoardSize(); x++) {
+                Position position = Position.of(x, y);
+                switch (getColor(position)) {
                     case Empty:
-                        row += ". ";
+                        if (isKomi(position)) {
+                            row += "+ ";
+                        } else {
+                            row += ". ";
+                        }
+
                         break;
 
                     case Black:
@@ -167,7 +218,7 @@ public final class Board {
     @Override
     public String toString() {
         return "Board{" +
-                positions.hashCode() +
+                hashCode() +
                 '}';
     }
 }

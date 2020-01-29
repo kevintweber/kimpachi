@@ -39,12 +39,12 @@ class BoardTest {
         Configuration configuration = EntityHelper.buildConfiguration();
         Board board = Board.empty(configuration);
         Position validPosition = Position.of(1, 1);
-        assertThat(board.isValid(validPosition))
+        assertThat(board.isOnBoard(validPosition))
                 .as("Checking valid position")
                 .isTrue();
 
         Position invalidPosition = Position.of(10000, 1);
-        assertThat(board.isValid(invalidPosition))
+        assertThat(board.isOnBoard(invalidPosition))
                 .as("Checking invalid position")
                 .isFalse();
 
