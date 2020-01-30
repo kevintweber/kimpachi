@@ -6,9 +6,7 @@ import com.kevintweber.kimpachi.game.Configuration;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @EqualsAndHashCode
@@ -35,23 +33,13 @@ public final class Board {
             throw new ConfigurationException("Black and white areas must not overlap.");
         }
 
-        this.blackArea = Area.of(blackArea);
-        this.whiteArea = Area.of(whiteArea);
+        this.blackArea = Area.copyOf(blackArea);
+        this.whiteArea = Area.copyOf(whiteArea);
+        this.komi = Area.copyOf(Komi.getKomi(blackArea.getBoardSize()));
+    }
 
-        Area.Builder areaBuilder = new Area.Builder(blackArea.getBoardSize());
-        if (blackArea.getBoardSize() == 19) {
-            areaBuilder.addPosition(Position.of(4, 4));
-            areaBuilder.addPosition(Position.of(10, 4));
-            areaBuilder.addPosition(Position.of(16, 4));
-            areaBuilder.addPosition(Position.of(4, 10));
-            areaBuilder.addPosition(Position.of(10, 10));
-            areaBuilder.addPosition(Position.of(16, 10));
-            areaBuilder.addPosition(Position.of(4, 16));
-            areaBuilder.addPosition(Position.of(10, 16));
-            areaBuilder.addPosition(Position.of(16, 16));
-        }
-
-        this.komi = areaBuilder.build();
+    public static Board copyOf(@NonNull Board otherBoard) {
+        return new Board(otherBoard.blackArea, otherBoard.whiteArea);
     }
 
     public static Board empty(@NonNull Configuration configuration) {
@@ -66,38 +54,15 @@ public final class Board {
         return empty;
     }
 
-    public static Board of(@NonNull Board otherBoard) {
-        return new Board(otherBoard.blackArea, otherBoard.whiteArea);
-    }
-
     public static Board of(@NonNull Configuration configuration) {
         Board empty = Board.empty(configuration);
-        if (configuration.getHandicap() == 0) {
+        if (configuration.getHandicap() <= 1) {
             return empty;
         }
 
-        Board handicapBoard = Board.of(empty);
-        List<Position> handicapPositions = new ArrayList<>();
-        switch (configuration.getBoardSize()) {
-            case 9:
-                break;
+        Area blackHandicapArea = Handicap.getHandicap(configuration);
 
-            case 13:
-                break;
-
-            case 19:
-                handicapPositions.add(Position.of(4, 4));
-                break;
-
-            default:
-                throw new ConfigurationException("Illegal board size: " + configuration.getBoardSize());
-        }
-
-        for (int i = 0; i < configuration.getHandicap(); i++) {
-            handicapBoard = handicapBoard.withMove(Move.normalMove(Color.Black, handicapPositions.get(i)));
-        }
-
-        return handicapBoard;
+        return new Board(blackHandicapArea, Area.empty(configuration.getBoardSize()));
     }
 
     public Board clear(@NonNull Position position) {

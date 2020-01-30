@@ -13,7 +13,8 @@ class TurnManagerTest {
 
     @Test
     void getNextMoveColor() {
-        TurnManager turnManager = new TurnManager(new LinkedList<>());
+        Configuration configuration = new Configuration.Builder().build();
+        TurnManager turnManager = new TurnManager(configuration, new LinkedList<>());
         assertThat(turnManager.getNextMoveColor())
                 .as("Checking first move color")
                 .isEqualTo(Color.Black);
@@ -28,7 +29,8 @@ class TurnManagerTest {
 
     @Test
     void isGameOver() {
-        TurnManager turnManager = new TurnManager(new LinkedList<>());
+        Configuration configuration = new Configuration.Builder().build();
+        TurnManager turnManager = new TurnManager(configuration, new LinkedList<>());
         turnManager.addTurn(
                 new Turn(Move.normalMove(Color.Black, Position.of(2, 2)))
         );

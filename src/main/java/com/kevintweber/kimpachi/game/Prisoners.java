@@ -1,26 +1,26 @@
 package com.kevintweber.kimpachi.game;
 
+import com.google.common.collect.ImmutableSet;
 import com.kevintweber.kimpachi.board.Color;
 import com.kevintweber.kimpachi.board.Position;
 import lombok.Data;
 import lombok.NonNull;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
 public final class Prisoners {
 
-    private final Set<Position> blackPrisoners;
-    private final Set<Position> whitePrisoners;
+    private final ImmutableSet<Position> blackPrisoners;
+    private final ImmutableSet<Position> whitePrisoners;
 
     private static final Prisoners EMPTY = new Prisoners(Set.of(), Set.of());
 
     private Prisoners(
             @NonNull Set<Position> blackPrisoners,
             @NonNull Set<Position> whitePrisoners) {
-        this.blackPrisoners = new HashSet<>(blackPrisoners);
-        this.whitePrisoners = new HashSet<>(whitePrisoners);
+        this.blackPrisoners = ImmutableSet.copyOf(blackPrisoners);
+        this.whitePrisoners = ImmutableSet.copyOf(whitePrisoners);
     }
 
     public static Prisoners of(

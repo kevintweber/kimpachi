@@ -35,7 +35,7 @@ public final class Game {
                 UUID.randomUUID(),
                 BoardManager.newBoard(configuration),
                 configuration,
-                new TurnManager()
+                new TurnManager(configuration)
         );
     }
 

@@ -1,5 +1,6 @@
 package com.kevintweber.kimpachi.board;
 
+import com.google.common.collect.ImmutableSet;
 import com.kevintweber.kimpachi.exception.ConfigurationException;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -15,7 +16,7 @@ import java.util.Set;
 public final class Area {
 
     private final int boardSize;
-    private final Set<Position> positions;
+    private final ImmutableSet<Position> positions;
 
     private static final Map<Integer, Area> EMPTY = new HashMap<>();
 
@@ -27,7 +28,7 @@ public final class Area {
         }
 
         this.boardSize = boardSize;
-        this.positions = new HashSet<>(positions);
+        this.positions = ImmutableSet.copyOf(positions);
     }
 
     public static Area empty(final int boardSize) {
@@ -41,7 +42,7 @@ public final class Area {
         return emptyArea;
     }
 
-    public static Area of(@NonNull Area otherArea) {
+    public static Area copyOf(@NonNull Area otherArea) {
         return new Area(otherArea.boardSize, otherArea.positions);
     }
 
@@ -50,7 +51,7 @@ public final class Area {
     }
 
     public Area enlarge() {
-        Area enlargedArea = Area.of(this);
+        Area enlargedArea = Area.copyOf(this);
         for (Position position : positions) {
             enlargedArea = enlargedArea.union(enlargePosition(position));
         }
@@ -63,14 +64,14 @@ public final class Area {
             return this;
         }
 
-        Area startingArea = Area.of(this);
+        Area startingArea = Area.copyOf(this);
         for (int i = 0; i < count; i++) {
             Area enlargedArea = startingArea.enlarge();
             if (enlargedArea.equals(startingArea)) {
                 return enlargedArea;
             }
 
-            startingArea = Area.of(enlargedArea);
+            startingArea = Area.copyOf(enlargedArea);
         }
 
         return startingArea;

@@ -13,13 +13,18 @@ import java.util.LinkedList;
 @ToString
 public final class TurnManager {
 
+    private final Configuration configuration;
     private final Deque<Turn> turns;
 
-    public TurnManager() {
+    public TurnManager(@NonNull Configuration configuration) {
+        this.configuration = configuration;
         this.turns = new LinkedList<>();
     }
 
-    public TurnManager(@NonNull Deque<Turn> turns) {
+    public TurnManager(
+            @NonNull Configuration configuration,
+            @NonNull Deque<Turn> turns) {
+        this.configuration = configuration;
         this.turns = turns;
     }
 
@@ -38,6 +43,10 @@ public final class TurnManager {
 
     public Color getNextMoveColor() {
         if (turns.isEmpty()) {
+            if (configuration.getHandicap() > 1) {
+                return Color.White;
+            }
+
             return Color.Black;
         }
 

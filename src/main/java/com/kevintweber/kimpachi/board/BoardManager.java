@@ -22,7 +22,10 @@ public final class BoardManager {
     }
 
     public static BoardManager newBoard(@NonNull Configuration configuration) {
-        return new BoardManager(Board.empty(configuration), new HashSet<>());
+        return new BoardManager(
+                Board.empty(configuration),
+                new HashSet<>()
+        );
     }
 
     public static BoardManager inProgressBoard(
