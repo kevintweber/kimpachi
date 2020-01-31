@@ -13,7 +13,7 @@ class AreaTest {
                 .addPosition(Position.of(5, 6))
                 .build();
         Area enlargedArea = area.enlarge();
-        assertThat(enlargedArea.getSize())
+        assertThat(enlargedArea.count())
                 .as("Checking enlarged area size")
                 .isEqualTo(8);
         assertThat(enlargedArea.getPositions())
@@ -36,7 +36,7 @@ class AreaTest {
                 .addPosition(Position.of(1, 1))
                 .build();
         Area enlargedArea = area.enlarge();
-        assertThat(enlargedArea.getSize())
+        assertThat(enlargedArea.count())
                 .as("Checking enlarged area size")
                 .isEqualTo(3);
         assertThat(enlargedArea.getPositions())
@@ -54,7 +54,7 @@ class AreaTest {
                 .addPosition(Position.of(1, 1))
                 .build();
         Area enlargedArea = area.enlarge(2);
-        assertThat(enlargedArea.getSize())
+        assertThat(enlargedArea.count())
                 .as("Checking enlarged area size")
                 .isEqualTo(6);
         assertThat(enlargedArea.getPositions())
@@ -80,7 +80,7 @@ class AreaTest {
                 .addPosition(Position.of(5, 4))
                 .build();
         Area intersection = area.intersection(otherArea);
-        assertThat(intersection.getSize())
+        assertThat(intersection.count())
                 .as("Checking intersection area size")
                 .isEqualTo(1);
         assertThat(intersection.getPositions())
@@ -99,7 +99,7 @@ class AreaTest {
                 .addPosition(Position.of(5, 4))
                 .build();
         Area union = area.union(otherArea);
-        assertThat(union.getSize())
+        assertThat(union.count())
                 .as("Checking union area size")
                 .isEqualTo(3);
         assertThat(union.getPositions())

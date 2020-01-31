@@ -21,15 +21,13 @@ public final class Board {
     private Board(
             @NonNull Area blackArea,
             @NonNull Area whiteArea) {
+        Board.checkBoardSize(blackArea.getBoardSize());
         if (blackArea.getBoardSize() != whiteArea.getBoardSize()) {
             throw new ConfigurationException("Each area must have the same board size.");
         }
 
-        if (!isValidBoardSize(blackArea.getBoardSize())) {
-            throw new ConfigurationException("Invalid board size: " + blackArea.getBoardSize());
-        }
 
-        if (blackArea.intersection(whiteArea).getSize() != 0) {
+        if (blackArea.intersection(whiteArea).count() != 0) {
             throw new ConfigurationException("Black and white areas must not overlap.");
         }
 
@@ -74,7 +72,7 @@ public final class Board {
         return modifyPosition(position, Color.Empty);
     }
 
-    public int getSize() {
+    public int getBoardSize() {
         return blackArea.getBoardSize();
     }
 
@@ -115,8 +113,10 @@ public final class Board {
                 y <= size;
     }
 
-    public static boolean isValidBoardSize(int boardSize) {
-        return boardSize == 19 || boardSize == 13 || boardSize == 9;
+    public static void checkBoardSize(int boardSize) {
+        if (boardSize != 19 && boardSize != 13 && boardSize != 9) {
+            throw new ConfigurationException("Invalid board size: " + boardSize);
+        }
     }
 
     public Board withMove(@NonNull Move move) {

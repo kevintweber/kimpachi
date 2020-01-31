@@ -1,7 +1,5 @@
 package com.kevintweber.kimpachi.board;
 
-import com.kevintweber.kimpachi.exception.ConfigurationException;
-
 public final class Komi {
 
     private static Area komi9;
@@ -9,10 +7,7 @@ public final class Komi {
     private static Area komi19;
 
     public static Area getKomi(int boardSize) {
-        if (!Board.isValidBoardSize(boardSize)) {
-            throw new ConfigurationException("Invalid board size: " + boardSize);
-        }
-
+        Board.checkBoardSize(boardSize);
         if (boardSize == 9) {
             return getKomi9();
         }

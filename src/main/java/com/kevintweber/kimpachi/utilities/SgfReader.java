@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @ToString
-public class SgfReader {
+public final class SgfReader {
 
     private static final Logger logger = LoggerFactory.getLogger(SgfReader.class);
 

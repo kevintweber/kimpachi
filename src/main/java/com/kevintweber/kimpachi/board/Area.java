@@ -23,10 +23,7 @@ public final class Area {
     private Area(
             final int boardSize,
             @NonNull Set<Position> positions) {
-        if (!Board.isValidBoardSize(boardSize)) {
-            throw new ConfigurationException("Invalid board size: " + boardSize);
-        }
-
+        Board.checkBoardSize(boardSize);
         this.boardSize = boardSize;
         this.positions = ImmutableSet.copyOf(positions);
     }
@@ -105,7 +102,7 @@ public final class Area {
         return new HashSet<>(positions);
     }
 
-    public int getSize() {
+    public int count() {
         return positions.size();
     }
 
@@ -173,10 +170,7 @@ public final class Area {
         private final Set<Position> builderPositions;
 
         public Builder(int builderSize) {
-            if (!Board.isValidBoardSize(builderSize)) {
-                throw new ConfigurationException("Invalid board size: " + builderSize);
-            }
-
+            Board.checkBoardSize(builderSize);
             this.builderSize = builderSize;
             this.builderPositions = new HashSet<>();
         }

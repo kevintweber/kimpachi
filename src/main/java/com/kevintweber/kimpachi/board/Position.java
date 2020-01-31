@@ -40,6 +40,16 @@ public final class Position implements Comparable<Position> {
         return of(x, y);
     }
 
+    public boolean isAdjacent(@NonNull Position otherPosition) {
+        int otherX = otherPosition.getX();
+        int otherY = otherPosition.getY();
+        if (x == otherX && Math.abs(y - otherY) == 1) {
+            return true;
+        }
+
+        return y == otherY && Math.abs(x - otherX) == 1;
+    }
+
     @Override
     public int compareTo(Position o) {
         if (o == null) {

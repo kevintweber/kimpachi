@@ -1,6 +1,6 @@
 package com.kevintweber.kimpachi.board;
 
-import com.kevintweber.kimpachi.exception.IllegalMoveException;
+import com.kevintweber.kimpachi.exception.ColorRequiredException;
 import com.kevintweber.kimpachi.exception.SgfException;
 import com.kevintweber.kimpachi.utilities.SgfToken;
 import lombok.Data;
@@ -26,7 +26,7 @@ public final class Move {
             @NonNull Color color,
             @NonNull Position position) {
         if (color.equals(Color.Empty)) {
-            throw new IllegalMoveException("Move color cannot be EMPTY.");
+            throw new ColorRequiredException("Move color cannot be EMPTY.");
         }
 
         return new Move(color, position, false);
@@ -34,7 +34,7 @@ public final class Move {
 
     public static Move passMove(@NonNull Color color) {
         if (color.equals(Color.Empty)) {
-            throw new IllegalMoveException("Move color cannot be EMPTY.");
+            throw new ColorRequiredException("Move color cannot be EMPTY.");
         }
 
         return new Move(color, null, true);

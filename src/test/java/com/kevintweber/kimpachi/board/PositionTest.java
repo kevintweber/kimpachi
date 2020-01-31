@@ -54,6 +54,34 @@ class PositionTest {
         );
     }
 
+    @ParameterizedTest
+    @MethodSource("isAdjacentDataProvider")
+    void isAdjacent(Position position, Position otherPosition, boolean expectedResult) {
+        assertThat(position.isAdjacent(otherPosition))
+                .as("Checking isAdjacent")
+                .isEqualTo(expectedResult);
+    }
+
+    private static Stream<Arguments> isAdjacentDataProvider() {
+        return Stream.of(
+                Arguments.of(
+                        Position.of(1, 1),
+                        Position.of(1, 2),
+                        true
+                ),
+                Arguments.of(
+                        Position.of(2, 2),
+                        Position.of(1, 2),
+                        true
+                ),
+                Arguments.of(
+                        Position.of(2, 2),
+                        Position.of(1, 1),
+                        false
+                )
+        );
+    }
+
     @Test
     void toSgf() {
         Position test = Position.of(1, 2);

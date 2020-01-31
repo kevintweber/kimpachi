@@ -26,10 +26,10 @@ class BoardTest {
     }
 
     @Test
-    void getSize() {
+    void getBoardSize() {
         Configuration configuration = EntityHelper.buildConfiguration(19);
         Board board = Board.empty(configuration);
-        assertThat(board.getSize())
+        assertThat(board.getBoardSize())
                 .as("Checking size")
                 .isEqualTo(19);
     }
