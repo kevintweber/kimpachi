@@ -23,7 +23,7 @@ public final class BoardManager {
 
     public static BoardManager newBoard(@NonNull Configuration configuration) {
         return new BoardManager(
-                Board.empty(configuration),
+                Board.empty(),
                 new HashSet<>()
         );
     }

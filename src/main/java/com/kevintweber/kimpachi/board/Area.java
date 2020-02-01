@@ -1,46 +1,31 @@
 package com.kevintweber.kimpachi.board;
 
 import com.google.common.collect.ImmutableSet;
-import com.kevintweber.kimpachi.exception.ConfigurationException;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @EqualsAndHashCode
 @ToString
 public final class Area {
 
-    private final int boardSize;
     private final ImmutableSet<Position> positions;
 
-    private static final Map<Integer, Area> EMPTY = new HashMap<>();
+    private static final Area EMPTY = new Area(Set.of());
 
-    private Area(
-            final int boardSize,
-            @NonNull Set<Position> positions) {
-        Board.checkBoardSize(boardSize);
-        this.boardSize = boardSize;
+    private Area(@NonNull Set<Position> positions) {
         this.positions = ImmutableSet.copyOf(positions);
     }
 
-    public static Area empty(final int boardSize) {
-        if (EMPTY.containsKey(boardSize)) {
-            return EMPTY.get(boardSize);
-        }
-
-        Area emptyArea = new Area(boardSize, Set.of());
-        EMPTY.put(boardSize, emptyArea);
-
-        return emptyArea;
+    public static Area empty() {
+        return EMPTY;
     }
 
     public static Area copyOf(@NonNull Area otherArea) {
-        return new Area(otherArea.boardSize, otherArea.positions);
+        return new Area(otherArea.positions);
     }
 
     public boolean contains(@NonNull Position position) {
@@ -75,7 +60,7 @@ public final class Area {
     }
 
     private Area enlargePosition(Position position) {
-        Area enlargedArea = new Area(boardSize, Set.of(position));
+        Area enlargedArea = new Area(Set.of(position));
         int x = position.getX();
         int y = position.getY();
         enlargedArea = addPositionToArea(enlargedArea, x - 1, y);
@@ -94,10 +79,6 @@ public final class Area {
         }
     }
 
-    public int getBoardSize() {
-        return boardSize;
-    }
-
     public Set<Position> getPositions() {
         return new HashSet<>(positions);
     }
@@ -107,71 +88,38 @@ public final class Area {
     }
 
     public Area intersection(@NonNull Area otherArea) {
-        if (boardSize != otherArea.boardSize) {
-            throw new IllegalArgumentException(
-                    "When combining Areas, both Areas must have the same board size: " + otherArea.boardSize
-            );
-        }
-
         Set<Position> commonPositions = new HashSet<>(positions);
         commonPositions.retainAll(otherArea.positions);
 
-        return new Area(boardSize, commonPositions);
-    }
-
-    public boolean isValidPosition(@NonNull Position position) {
-        int x = position.getX();
-        int y = position.getY();
-
-        return x > 0 &&
-                y > 0 &&
-                x <= boardSize &&
-                y <= boardSize;
+        return new Area(commonPositions);
     }
 
     public Area union(@NonNull Area otherArea) {
-        if (boardSize != otherArea.boardSize) {
-            throw new IllegalArgumentException(
-                    "When combining Areas, both Areas must have the same board size: " + otherArea.boardSize
-            );
-        }
-
         Set<Position> positionSet = new HashSet<>(positions);
         positionSet.addAll(otherArea.positions);
 
-        return new Area(boardSize, positionSet);
+        return new Area(positionSet);
     }
 
     public Area with(@NonNull Position position) {
-        if (!isValidPosition(position)) {
-            throw new ConfigurationException("Invalid position: x=" + position.getX() + ";y=" + position.getY());
-        }
-
         Set<Position> positionSet = new HashSet<>(positions);
         positionSet.add(position);
 
-        return new Area(boardSize, positionSet);
+        return new Area(positionSet);
     }
 
     public Area without(@NonNull Position position) {
-        if (!isValidPosition(position)) {
-            throw new ConfigurationException("Invalid position: x=" + position.getX() + ";y=" + position.getY());
-        }
-
         Set<Position> positionSet = new HashSet<>(positions);
         positionSet.remove(position);
 
-        return new Area(boardSize, positionSet);
+        return new Area(positionSet);
     }
 
     public static class Builder {
 
-        private final int builderSize;
         private final Set<Position> builderPositions;
 
-        public Builder(int builderSize) {
-            Board.checkBoardSize(builderSize);
-            this.builderSize = builderSize;
+        public Builder() {
             this.builderPositions = new HashSet<>();
         }
 
@@ -182,7 +130,7 @@ public final class Area {
         }
 
         public Area build() {
-            return new Area(builderSize, builderPositions);
+            return new Area(builderPositions);
         }
     }
 }

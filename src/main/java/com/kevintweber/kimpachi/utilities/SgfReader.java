@@ -76,7 +76,7 @@ public final class SgfReader {
         switch (token.getKey()) {
             case "B":
             case "W":
-                moves.addLast(Move.sgf(token));
+                moves.addLast(Move.fromSgf(token));
                 break;
 
             case "DT":

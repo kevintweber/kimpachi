@@ -4,7 +4,6 @@ import com.google.common.graph.ElementOrder;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.ImmutableGraph;
 import com.google.common.graph.MutableGraph;
-import com.kevintweber.kimpachi.exception.ConfigurationException;
 import com.kevintweber.kimpachi.exception.NonAdjacentPositionException;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -20,17 +19,13 @@ import java.util.Set;
 @ToString
 public final class Group implements Stones {
 
-    private final BoardColor boardColor;
+    private final Stone stone;
     private final ImmutableGraph<Position> positions;
 
     private Group(
-            @NonNull BoardColor boardColor,
+            @NonNull Stone stone,
             @NonNull Position position) {
-        this.boardColor = boardColor;
-        if (!isValidPosition(position)) {
-            throw new ConfigurationException("Invalid position: x=" + position.getX() + ";y=" + position.getY());
-        }
-
+        this.stone = stone;
         this.positions = GraphBuilder.undirected()
                 .allowsSelfLoops(false)
                 .<Position>nodeOrder(ElementOrder.natural())
@@ -40,9 +35,9 @@ public final class Group implements Stones {
     }
 
     private Group(
-            @NonNull BoardColor boardColor,
+            @NonNull Stone stone,
             @NonNull ImmutableGraph<Position> positions) {
-        this.boardColor = boardColor;
+        this.stone = stone;
         if (positions.isDirected()) {
             throw new IllegalArgumentException("Cannot construct Group from directed graph");
         }
@@ -51,9 +46,9 @@ public final class Group implements Stones {
     }
 
     private Group(
-            @NonNull BoardColor boardColor,
+            @NonNull Stone stone,
             @NonNull MutableGraph<Position> positions) {
-        this.boardColor = boardColor;
+        this.stone = stone;
         if (positions.isDirected()) {
             throw new IllegalArgumentException("Cannot construct Group from directed graph");
         }
@@ -64,21 +59,17 @@ public final class Group implements Stones {
     }
 
     public static Group of(
-            @NonNull BoardColor boardColor,
+            @NonNull Stone stone,
             @NonNull Position position) {
-        return new Group(boardColor, position);
+        return new Group(stone, position);
     }
 
     public static Group copyOf(@NonNull Group otherGroup) {
-        return new Group(otherGroup.boardColor, otherGroup.positions);
+        return new Group(otherGroup.stone, otherGroup.positions);
     }
 
     @Override
     public boolean contains(@NonNull Position position) {
-        if (!isValidPosition(position)) {
-            throw new ConfigurationException("Invalid position: x=" + position.getX() + ";y=" + position.getY());
-        }
-
         return positions.nodes().contains(position);
     }
 
@@ -88,13 +79,8 @@ public final class Group implements Stones {
     }
 
     @Override
-    public int getBoardSize() {
-        return boardColor.getBoardSize();
-    }
-
-    @Override
-    public Color getColor() {
-        return boardColor.getColor();
+    public Stone getStone() {
+        return stone;
     }
 
     @Override
@@ -118,21 +104,7 @@ public final class Group implements Stones {
         return adjacentPositions;
     }
 
-    public boolean isValidPosition(@NonNull Position position) {
-        int x = position.getX();
-        int y = position.getY();
-
-        return x > 0 &&
-                y > 0 &&
-                x <= boardColor.getBoardSize() &&
-                y <= boardColor.getBoardSize();
-    }
-
     public Group with(@NonNull Position position) {
-        if (!isValidPosition(position)) {
-            throw new ConfigurationException("Invalid position: x=" + position.getX() + ";y=" + position.getY());
-        }
-
         if (contains(position)) {
             return this;
         }
@@ -149,6 +121,6 @@ public final class Group implements Stones {
             enlargedGroup.putEdge(adjacentPosition, position);
         }
 
-        return new Group(boardColor, enlargedGroup);
+        return new Group(stone, enlargedGroup);
     }
 }

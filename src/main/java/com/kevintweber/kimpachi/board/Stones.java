@@ -6,14 +6,12 @@ import java.util.Set;
 
 public interface Stones {
 
-    Color getColor();
+    Stone getStone();
 
     boolean contains(@NonNull Position position);
 
     int count();
     
-    int getBoardSize();
-
     Set<Position> getPositions();
 
     boolean isEmpty();

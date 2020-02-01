@@ -16,15 +16,15 @@ public final class Position implements Comparable<Position> {
     private final int y;
 
     private Position(int x, int y) {
+        if (x <= 0 || y <= 0 || x > 19 || y > 19) {
+            throw new InvalidPositionException("Invalid position: x=" + x + ";y=" + y);
+        }
+
         this.x = x;
         this.y = y;
     }
 
     public static Position of(int x, int y) {
-        if (x <= 0 || y <= 0) {
-            throw new InvalidPositionException("Invalid position: x=" + x + ";y=" + y);
-        }
-
         return new Position(x, y);
     }
 

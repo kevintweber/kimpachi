@@ -1,8 +1,8 @@
 package com.kevintweber.kimpachi.game;
 
-import com.kevintweber.kimpachi.board.Color;
 import com.kevintweber.kimpachi.board.Move;
 import com.kevintweber.kimpachi.board.Position;
+import com.kevintweber.kimpachi.board.Stone;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -24,8 +24,8 @@ public final class Turn {
         this.prisoners = prisoners;
     }
 
-    public Color getColor() {
-        return move.getColor();
+    public Stone getStone() {
+        return move.getStone();
     }
 
     public Position getPosition() {

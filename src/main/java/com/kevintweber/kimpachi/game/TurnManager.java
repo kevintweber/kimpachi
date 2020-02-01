@@ -1,6 +1,6 @@
 package com.kevintweber.kimpachi.game;
 
-import com.kevintweber.kimpachi.board.Color;
+import com.kevintweber.kimpachi.board.Stone;
 import com.kevintweber.kimpachi.exception.IllegalMoveException;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -33,29 +33,29 @@ public final class TurnManager {
     }
 
     public void addTurn(@NonNull Turn turn) {
-        Color nextMoveColor = getNextMoveColor();
-        if (!turn.getColor().equals(nextMoveColor)) {
-            throw new IllegalMoveException("Out of turn. Color must be " + nextMoveColor.toString());
+        Stone nextMoveStone = getNextMoveStone();
+        if (!turn.getStone().equals(nextMoveStone)) {
+            throw new IllegalMoveException("Out of turn. Color must be " + nextMoveStone.toString());
         }
 
         this.turns.addLast(turn);
     }
 
-    public Color getNextMoveColor() {
+    public Stone getNextMoveStone() {
         if (turns.isEmpty()) {
             if (configuration.getHandicap() > 1) {
-                return Color.White;
+                return Stone.White;
             }
 
-            return Color.Black;
+            return Stone.Black;
         }
 
-        Color previousMoveColor = turns.getLast().getColor();
-        if (previousMoveColor.equals(Color.Black)) {
-            return Color.White;
+        Stone previousMoveStone = turns.getLast().getStone();
+        if (previousMoveStone.equals(Stone.Black)) {
+            return Stone.White;
         }
 
-        return Color.Black;
+        return Stone.Black;
     }
 
     public boolean isGameOver() {

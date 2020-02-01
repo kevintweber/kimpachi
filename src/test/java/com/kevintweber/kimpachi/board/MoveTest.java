@@ -14,7 +14,7 @@ class MoveTest {
     @ParameterizedTest
     @MethodSource("sgfDataProvider")
     void sgf(String description, SgfToken token, Move expectedMove) {
-        Move actual = Move.sgf(token);
+        Move actual = Move.fromSgf(token);
         assertThat(actual)
                 .as("Checking sgfToken to move: " + description)
                 .isEqualTo(expectedMove);

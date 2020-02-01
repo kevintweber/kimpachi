@@ -15,14 +15,14 @@ class TurnManagerTest {
     void getNextMoveColor() {
         Configuration configuration = new Configuration.Builder().build();
         TurnManager turnManager = new TurnManager(configuration, new LinkedList<>());
-        assertThat(turnManager.getNextMoveColor())
+        assertThat(turnManager.getNextMoveStone())
                 .as("Checking first move color")
                 .isEqualTo(Color.Black);
 
         turnManager.addTurn(
                 new Turn(Move.normalMove(Color.Black, Position.of(2, 2)))
         );
-        assertThat(turnManager.getNextMoveColor())
+        assertThat(turnManager.getNextMoveStone())
                 .as("Checking next color")
                 .isEqualTo(Color.White);
     }

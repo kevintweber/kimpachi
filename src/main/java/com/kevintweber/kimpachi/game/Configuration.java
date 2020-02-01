@@ -17,7 +17,6 @@ import java.time.format.DateTimeFormatter;
 @Data
 public final class Configuration {
 
-    private final int boardSize;
     private final int handicap;
     private final BigDecimal komi;
     private final Rules rules;
@@ -25,13 +24,11 @@ public final class Configuration {
     private final LocalDate date;
 
     private Configuration(
-            int boardSize,
             int handicap,
             @NonNull BigDecimal komi,
             @NonNull Rules rules,
             @NonNull Players players,
             @NonNull LocalDate date) {
-        this.boardSize = boardSize;
         this.handicap = handicap;
         this.komi = komi;
         this.rules = rules;
@@ -41,7 +38,7 @@ public final class Configuration {
 
     public String toSgf() {
         StringBuilder sb = new StringBuilder(
-                "(;FF[4]GM[1]SZ[" + boardSize + "]AP[Kimpachi:" +
+                "(;FF[4]GM[1]SZ[19]AP[Kimpachi:" +
                         this.getClass().getPackage().getImplementationVersion() + "]\n\n"
         );
 
@@ -56,7 +53,6 @@ public final class Configuration {
 
     public static class Builder {
 
-        private int builderBoardSize = 19;
         private int builderHandicap = 0;
         private BigDecimal builderKomi = new BigDecimal("6.5");
         private Rules builderRules = new JapaneseRules();
@@ -64,23 +60,6 @@ public final class Configuration {
         private LocalDate builderDate = LocalDate.now();
 
         public Builder() {
-        }
-
-        public Builder withBoardSize(int boardSize) {
-            switch (boardSize) {
-                case 9:
-                case 13:
-                case 19:
-                    // Allowed so do nothing.
-                    break;
-
-                default:
-                    throw new ConfigurationException("Illegal board size: " + boardSize);
-            }
-
-            this.builderBoardSize = boardSize;
-
-            return this;
         }
 
         public Builder withHandicap(int handicap) {
@@ -143,7 +122,6 @@ public final class Configuration {
 
         public Configuration build() {
             return new Configuration(
-                    builderBoardSize,
                     builderHandicap,
                     builderKomi,
                     builderRules,
