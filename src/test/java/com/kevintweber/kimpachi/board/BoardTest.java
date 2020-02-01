@@ -1,62 +1,24 @@
 package com.kevintweber.kimpachi.board;
 
-import com.kevintweber.kimpachi.exception.InvalidPositionException;
-import com.kevintweber.kimpachi.game.Configuration;
-import com.kevintweber.kimpachi.helpers.EntityHelper;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class BoardTest {
 
     @Test
     void empty() {
-        Configuration configuration9 = EntityHelper.buildConfiguration(9);
-        Board board1 = Board.empty(configuration9);
-        Board board2 = Board.empty(configuration9);
-
-        Configuration configuration19 = EntityHelper.buildConfiguration(19);
-        Board board3 = Board.empty(configuration19);
+        Board board1 = Board.empty();
+        Board board2 = Board.empty();
 
         assertThat(board1)
-                .as("Checking board")
-                .isSameAs(board2)
-                .isNotEqualTo(board3);
-    }
-
-    @Test
-    void getBoardSize() {
-        Configuration configuration = EntityHelper.buildConfiguration(19);
-        Board board = Board.empty(configuration);
-        assertThat(board.getBoardSize())
-                .as("Checking size")
-                .isEqualTo(19);
-    }
-
-    @Test
-    void isValid() {
-        Configuration configuration = EntityHelper.buildConfiguration();
-        Board board = Board.empty(configuration);
-        Position validPosition = Position.of(1, 1);
-        assertThat(board.isOnBoard(validPosition))
-                .as("Checking valid position")
-                .isTrue();
-
-        Position invalidPosition = Position.of(10000, 1);
-        assertThat(board.isOnBoard(invalidPosition))
-                .as("Checking invalid position")
-                .isFalse();
-
-        assertThatThrownBy(() -> board.getColor(invalidPosition))
-                .as("Checking invalid position give exception")
-                .isInstanceOf(InvalidPositionException.class);
+                .as("Checking empty board")
+                .isSameAs(board2);
     }
 
     @Test
     void boardManipulations() {
-        Configuration configuration = EntityHelper.buildConfiguration();
-        Board board = Board.empty(configuration);
+        Board board = Board.empty();
         Position position = Position.of(1, 1);
         assertThat(board.getColor(position))
                 .as("Checking empty position")
@@ -65,7 +27,7 @@ class BoardTest {
                 .as("Checking position is not occupied")
                 .isFalse();
 
-        Move blackMove = Move.normalMove(Color.Black, position);
+        Move blackMove = Move.normalMove(Stone.Black, position);
         Board nextBoard = board.withMove(blackMove);
         assertThat(nextBoard)
                 .as("Checking boards are immutable")

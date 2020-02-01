@@ -8,7 +8,7 @@ class AreaTest {
 
     @Test
     void enlargeInCenter() {
-        Area area = new Area.Builder(19)
+        Area area = new Area.Builder()
                 .addPosition(Position.of(5, 5))
                 .addPosition(Position.of(5, 6))
                 .build();
@@ -32,7 +32,7 @@ class AreaTest {
 
     @Test
     void enlargeInCorner() {
-        Area area = new Area.Builder(19)
+        Area area = new Area.Builder()
                 .addPosition(Position.of(1, 1))
                 .build();
         Area enlargedArea = area.enlarge();
@@ -50,7 +50,7 @@ class AreaTest {
 
     @Test
     void enlargeMultipleTimes() {
-        Area area = new Area.Builder(19)
+        Area area = new Area.Builder()
                 .addPosition(Position.of(1, 1))
                 .build();
         Area enlargedArea = area.enlarge(2);
@@ -71,11 +71,11 @@ class AreaTest {
 
     @Test
     void intersection() {
-        Area area = new Area.Builder(19)
+        Area area = new Area.Builder()
                 .addPosition(Position.of(5, 5))
                 .addPosition(Position.of(5, 6))
                 .build();
-        Area otherArea = new Area.Builder(19)
+        Area otherArea = new Area.Builder()
                 .addPosition(Position.of(5, 5))
                 .addPosition(Position.of(5, 4))
                 .build();
@@ -90,11 +90,11 @@ class AreaTest {
 
     @Test
     void union() {
-        Area area = new Area.Builder(19)
+        Area area = new Area.Builder()
                 .addPosition(Position.of(5, 5))
                 .addPosition(Position.of(5, 6))
                 .build();
-        Area otherArea = new Area.Builder(19)
+        Area otherArea = new Area.Builder()
                 .addPosition(Position.of(5, 5))
                 .addPosition(Position.of(5, 4))
                 .build();

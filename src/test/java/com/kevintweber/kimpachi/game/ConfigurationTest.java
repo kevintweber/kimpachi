@@ -14,7 +14,6 @@ class ConfigurationTest {
     @Test
     void toSgf() {
         Configuration configuration = new Configuration.Builder()
-                .withBoardSize(19)
                 .withHandicap(0)
                 .withKomi(new BigDecimal("0.5"))
                 .withRules(RuleSet.JapaneseRules)

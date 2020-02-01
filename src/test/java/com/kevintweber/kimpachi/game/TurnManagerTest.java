@@ -1,8 +1,8 @@
 package com.kevintweber.kimpachi.game;
 
-import com.kevintweber.kimpachi.board.Color;
 import com.kevintweber.kimpachi.board.Move;
 import com.kevintweber.kimpachi.board.Position;
+import com.kevintweber.kimpachi.board.Stone;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -12,19 +12,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TurnManagerTest {
 
     @Test
-    void getNextMoveColor() {
+    void getNextMoveStone() {
         Configuration configuration = new Configuration.Builder().build();
         TurnManager turnManager = new TurnManager(configuration, new LinkedList<>());
         assertThat(turnManager.getNextMoveStone())
-                .as("Checking first move color")
-                .isEqualTo(Color.Black);
+                .as("Checking first move Stone")
+                .isEqualTo(Stone.Black);
 
         turnManager.addTurn(
-                new Turn(Move.normalMove(Color.Black, Position.of(2, 2)))
+                new Turn(Move.normalMove(Stone.Black, Position.of(2, 2)))
         );
         assertThat(turnManager.getNextMoveStone())
-                .as("Checking next color")
-                .isEqualTo(Color.White);
+                .as("Checking next Stone")
+                .isEqualTo(Stone.White);
     }
 
     @Test
@@ -32,7 +32,7 @@ class TurnManagerTest {
         Configuration configuration = new Configuration.Builder().build();
         TurnManager turnManager = new TurnManager(configuration, new LinkedList<>());
         turnManager.addTurn(
-                new Turn(Move.normalMove(Color.Black, Position.of(2, 2)))
+                new Turn(Move.normalMove(Stone.Black, Position.of(2, 2)))
         );
 
         assertThat(turnManager.isGameOver())
@@ -40,27 +40,27 @@ class TurnManagerTest {
                 .isFalse();
 
         turnManager.addTurn(
-                new Turn(Move.normalMove(Color.White, Position.of(3, 3)))
+                new Turn(Move.normalMove(Stone.White, Position.of(3, 3)))
         );
 
         assertThat(turnManager.isGameOver())
                 .as("Checking is game over after 2 turns")
                 .isFalse();
 
-        turnManager.addTurn(new Turn(Move.passMove(Color.Black)));
+        turnManager.addTurn(new Turn(Move.passMove(Stone.Black)));
         assertThat(turnManager.isGameOver())
                 .as("Checking is game over after 1 pass move")
                 .isFalse();
 
         turnManager.addTurn(
-                new Turn(Move.normalMove(Color.White, Position.of(4, 4)))
+                new Turn(Move.normalMove(Stone.White, Position.of(4, 4)))
         );
-        turnManager.addTurn(new Turn(Move.passMove(Color.Black)));
+        turnManager.addTurn(new Turn(Move.passMove(Stone.Black)));
         assertThat(turnManager.isGameOver())
                 .as("Checking is game over after 2 non-consecutinve pass moves")
                 .isFalse();
 
-        turnManager.addTurn(new Turn(Move.passMove(Color.White)));
+        turnManager.addTurn(new Turn(Move.passMove(Stone.White)));
         assertThat(turnManager.isGameOver())
                 .as("Checking is game over after 2 non-consecutinve pass moves")
                 .isTrue();

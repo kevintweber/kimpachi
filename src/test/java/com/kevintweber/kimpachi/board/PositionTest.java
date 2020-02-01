@@ -26,6 +26,14 @@ class PositionTest {
         assertThatThrownBy(() -> Position.of(-1, 15))
                 .as("Checking invalid coordinates")
                 .isInstanceOf(InvalidPositionException.class);
+
+        assertThatThrownBy(() -> Position.of(15, -15))
+                .as("Checking invalid coordinates")
+                .isInstanceOf(InvalidPositionException.class);
+
+        assertThatThrownBy(() -> Position.of(15, 150))
+                .as("Checking invalid coordinates")
+                .isInstanceOf(InvalidPositionException.class);
     }
 
     @ParameterizedTest

@@ -78,7 +78,7 @@ public final class Board {
 
     public Board withMove(@NonNull Move move) {
         Color currentColor = getColor(move.getPosition());
-        if (currentColor.equals(move.getStone())) {
+        if (currentColor.equals(Color.of(move.getStone()))) {
             return this;
         }
 

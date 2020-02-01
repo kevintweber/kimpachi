@@ -16,9 +16,6 @@ class SgfReaderTest {
         SgfReader sgfReader = new SgfReader();
         Game game = sgfReader.read(sgfEmpty);
 
-        assertThat(game.getConfiguration().getBoardSize())
-                .as("Checking default board size configuration")
-                .isEqualTo(19);
         assertThat(game.getConfiguration().getPlayers().getBlackName())
                 .as("Checking default black player name configuration")
                 .isNull();
@@ -36,9 +33,6 @@ class SgfReaderTest {
         SgfReader sgfReader = new SgfReader();
         Game game = sgfReader.read(sgfConfigurationOnly);
 
-        assertThat(game.getConfiguration().getBoardSize())
-                .as("Checking board size configuration")
-                .isEqualTo(19);
         assertThat(game.getConfiguration().getPlayers().getBlackName())
                 .as("Checking default black player name configuration")
                 .isEqualTo("Kevin Weber");
@@ -53,9 +47,6 @@ class SgfReaderTest {
         SgfReader sgfReader = new SgfReader();
         Game game = sgfReader.read(sgfConfigurationOnly);
 
-        assertThat(game.getConfiguration().getBoardSize())
-                .as("Checking board size configuration")
-                .isEqualTo(19);
         assertThat(game.getConfiguration().getPlayers().getBlackName())
                 .as("Checking default black player name configuration")
                 .isEqualTo("Kevin Weber");
@@ -70,9 +61,6 @@ class SgfReaderTest {
         SgfReader sgfReader = new SgfReader();
         Game game = sgfReader.read(sgfConfigurationOnly);
 
-        assertThat(game.getConfiguration().getBoardSize())
-                .as("Checking board size configuration")
-                .isEqualTo(19);
         assertThat(game.getConfiguration().getPlayers().getBlackName())
                 .as("Checking default black player name configuration")
                 .isEqualTo("Yasui Chitetsu");

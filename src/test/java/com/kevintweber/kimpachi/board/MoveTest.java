@@ -25,22 +25,22 @@ class MoveTest {
                 Arguments.of(
                         "Black normal move",
                         new SgfToken("B", "aa"),
-                        Move.normalMove(Color.Black, Position.of(1, 1))
+                        Move.normalMove(Stone.Black, Position.of(1, 1))
                 ),
                 Arguments.of(
                         "White normal move",
                         new SgfToken("W", "ca"),
-                        Move.normalMove(Color.White, Position.of(3, 1))
+                        Move.normalMove(Stone.White, Position.of(3, 1))
                 ),
                 Arguments.of(
                         "Black pass move",
                         new SgfToken("B", ""),
-                        Move.passMove(Color.Black)
+                        Move.passMove(Stone.Black)
                 ),
                 Arguments.of(
                         "White pass move",
                         new SgfToken("W", ""),
-                        Move.passMove(Color.White)
+                        Move.passMove(Stone.White)
                 )
         );
     }
@@ -58,22 +58,22 @@ class MoveTest {
         return Stream.of(
                 Arguments.of(
                         "Black pass move",
-                        Move.passMove(Color.Black),
+                        Move.passMove(Stone.Black),
                         "B[]"
                 ),
                 Arguments.of(
                         "White pass move",
-                        Move.passMove(Color.White),
+                        Move.passMove(Stone.White),
                         "W[]"
                 ),
                 Arguments.of(
                         "Black normal move",
-                        Move.normalMove(Color.Black, Position.of(2,4)),
+                        Move.normalMove(Stone.Black, Position.of(2,4)),
                         "B[bd]"
                 ),
                 Arguments.of(
                         "White normal move",
-                        Move.normalMove(Color.White, Position.of(4,2)),
+                        Move.normalMove(Stone.White, Position.of(4,2)),
                         "W[db]"
                 )
         );
