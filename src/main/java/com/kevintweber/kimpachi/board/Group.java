@@ -1,60 +1,40 @@
 package com.kevintweber.kimpachi.board;
 
-import com.google.common.graph.ElementOrder;
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.ImmutableGraph;
-import com.google.common.graph.MutableGraph;
 import com.kevintweber.kimpachi.exception.NonAdjacentPositionException;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.graph.builder.GraphBuilder;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A Group is a set of always connected stones of the same color.
+ * A Group is a set of connected stones of the same color.
  */
 @EqualsAndHashCode
 @ToString
 public final class Group implements Stones {
 
     private final Stone stone;
-    private final ImmutableGraph<Position> positions;
+    private final Graph<Position, DefaultEdge> positions;
 
     private Group(
             @NonNull Stone stone,
             @NonNull Position position) {
         this.stone = stone;
-        this.positions = GraphBuilder.undirected()
-                .allowsSelfLoops(false)
-                .<Position>nodeOrder(ElementOrder.natural())
-                .immutable()
-                .addNode(position)
-                .build();
+        this.positions = new SimpleGraph<>(DefaultEdge.class);
+        this.positions.addVertex(position);
     }
 
     private Group(
             @NonNull Stone stone,
-            @NonNull ImmutableGraph<Position> positions) {
+            @NonNull Graph<Position, DefaultEdge> positions) {
         this.stone = stone;
-        if (positions.isDirected()) {
-            throw new IllegalArgumentException("Cannot construct Group from directed graph");
-        }
-
-        this.positions = positions;
-    }
-
-    private Group(
-            @NonNull Stone stone,
-            @NonNull MutableGraph<Position> positions) {
-        this.stone = stone;
-        if (positions.isDirected()) {
-            throw new IllegalArgumentException("Cannot construct Group from directed graph");
-        }
-
-        this.positions = GraphBuilder.from(positions)
-                .<Position>immutable()
+        this.positions = new GraphBuilder<>(positions)
                 .build();
     }
 
@@ -70,12 +50,12 @@ public final class Group implements Stones {
 
     @Override
     public boolean contains(@NonNull Position position) {
-        return positions.nodes().contains(position);
+        return positions.vertexSet().contains(position);
     }
 
     @Override
     public int count() {
-        return positions.nodes().size();
+        return positions.vertexSet().size();
     }
 
     @Override
@@ -85,7 +65,7 @@ public final class Group implements Stones {
 
     @Override
     public Set<Position> getPositions() {
-        return positions.nodes();
+        return new HashSet<>(positions.vertexSet());
     }
 
     @Override
@@ -95,7 +75,7 @@ public final class Group implements Stones {
 
     private Set<Position> getAdjacentPositions(Position position) {
         Set<Position> adjacentPositions = new HashSet<>();
-        for (Position innerPosition : positions.nodes()) {
+        for (Position innerPosition : positions.vertexSet()) {
             if (innerPosition.isAdjacent(position)) {
                 adjacentPositions.add(innerPosition);
             }
@@ -114,11 +94,10 @@ public final class Group implements Stones {
             throw new NonAdjacentPositionException("Position is non-adjacent: " + position);
         }
 
-        MutableGraph<Position> enlargedGroup = GraphBuilder.from(positions)
-                .build();
-        enlargedGroup.addNode(position);
+        Graph<Position, DefaultEdge> enlargedGroup = new GraphBuilder<>(positions).build();
+        enlargedGroup.addVertex(position);
         for (Position adjacentPosition : adjacentPositions) {
-            enlargedGroup.putEdge(adjacentPosition, position);
+            enlargedGroup.addEdge(adjacentPosition, position);
         }
 
         return new Group(stone, enlargedGroup);
