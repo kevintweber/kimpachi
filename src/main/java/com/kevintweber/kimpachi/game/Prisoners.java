@@ -37,11 +37,15 @@ public final class Prisoners {
         return EMPTY;
     }
 
-    private int count(Stone stone) {
+    public int count(Stone stone) {
         if (stone.equals(Stone.Black)) {
             return blackPrisoners.size();
         }
 
         return whitePrisoners.size();
+    }
+
+    public boolean isEmpty() {
+        return blackPrisoners.isEmpty() && whitePrisoners.isEmpty();
     }
 }

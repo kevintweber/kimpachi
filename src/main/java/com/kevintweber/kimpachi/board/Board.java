@@ -2,6 +2,7 @@ package com.kevintweber.kimpachi.board;
 
 import com.kevintweber.kimpachi.exception.ConfigurationException;
 import com.kevintweber.kimpachi.game.Configuration;
+import com.kevintweber.kimpachi.game.Prisoners;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
@@ -94,7 +95,9 @@ public final class Board {
         return !color.equals(Color.Empty);
     }
 
-    public Board withMove(@NonNull Move move) {
+    public Board withMove(
+            @NonNull Move move,
+            @NonNull Prisoners prisoners) {
         if (move.isPassMove()) {
             return this;
         }
@@ -104,7 +107,22 @@ public final class Board {
             return this;
         }
 
-        return modifyPosition(move.getPoint(), Color.of(move.getStone()));
+        Board modifiedBoard = modifyPosition(move.getPoint(), Color.of(move.getStone()));
+        if (prisoners.isEmpty()) {
+            return modifiedBoard;
+        }
+
+        if (move.getStone().equals(Stone.Black)) {
+            Area newWhiteArea = modifiedBoard.whiteArea.without(prisoners.getWhitePrisoners());
+            Area newBlackArea = modifiedBoard.blackArea.without(prisoners.getBlackPrisoners());
+
+            return new Board(newBlackArea, newWhiteArea);
+        }
+
+        Area newBlackArea = modifiedBoard.blackArea.without(prisoners.getBlackPrisoners());
+        Area newWhiteArea = modifiedBoard.whiteArea.without(prisoners.getWhitePrisoners());
+
+        return new Board(newBlackArea, newWhiteArea);
     }
 
     private Board modifyPosition(Point point, Color color) {
@@ -119,18 +137,20 @@ public final class Board {
         return new Board(blackArea.without(point), whiteArea.with(point));
     }
 
-    public void toStdOut() {
-        String header = "    ";
+    public String print() {
+        StringBuilder sb = new StringBuilder("    ");
         for (int i = 0; i < 19; i++) {
-            header += Board.positionCharacters.charAt(i) + " ";
+            sb.append(Board.positionCharacters.charAt(i));
+            sb.append(" ");
         }
 
-        System.out.println(header);
+        sb.append("\n");
 
         for (int y = 19; y >= 1; y--) {
-            String row = y + "  ";
+            sb.append(y);
+            sb.append("  ");
             if (y < 10) {
-                row += " ";
+                sb.append(" ");
             }
 
             for (int x = 1; x <= 19; x++) {
@@ -138,25 +158,27 @@ public final class Board {
                 switch (getColor(point)) {
                     case Empty:
                         if (isKomi(point)) {
-                            row += "+ ";
+                            sb.append("+ ");
                         } else {
-                            row += ". ";
+                            sb.append(". ");
                         }
 
                         break;
 
                     case Black:
-                        row += "X ";
+                        sb.append("X ");
                         break;
 
                     case White:
-                        row += "O ";
+                        sb.append("O ");
                         break;
                 }
             }
 
-            System.out.println(row);
+            sb.append("\n");
         }
+
+        return sb.toString();
     }
 
     @Override

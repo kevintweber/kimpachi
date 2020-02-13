@@ -57,10 +57,11 @@ public final class Game {
             return;
         }
 
+        Prisoners prisoners = Prisoners.empty(); // temp
         Turn turn = new Turn(
-                turnManager.getCurrentBoard().withMove(move),
+                turnManager.getCurrentBoard().withMove(move, prisoners),
                 move,
-                Prisoners.empty() //temp
+                prisoners
         );
 
         turnManager.addTurn(turn);
@@ -96,8 +97,8 @@ public final class Game {
                 turnManager.toSgf();
     }
 
-    public void toStdOut() {
-        turnManager.getCurrentBoard().toStdOut();
+    public String printBoard() {
+        return turnManager.getCurrentBoard().print();
     }
 
     @Override

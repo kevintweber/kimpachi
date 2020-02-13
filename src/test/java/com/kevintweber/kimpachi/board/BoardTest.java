@@ -1,5 +1,6 @@
 package com.kevintweber.kimpachi.board;
 
+import com.kevintweber.kimpachi.game.Prisoners;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +29,7 @@ class BoardTest {
                 .isFalse();
 
         Move blackMove = Move.normalMove(Stone.Black, point);
-        Board nextBoard = board.withMove(blackMove);
+        Board nextBoard = board.withMove(blackMove, Prisoners.empty());
         assertThat(nextBoard)
                 .as("Checking boards are immutable")
                 .isNotEqualTo(board);
@@ -42,7 +43,7 @@ class BoardTest {
                 .as("Checking toString")
                 .isNotEqualTo(board.toString());
 
-        Board nextBoard2 = nextBoard.withMove(blackMove);
+        Board nextBoard2 = nextBoard.withMove(blackMove, Prisoners.empty());
         assertThat(nextBoard2)
                 .as("Checking immutability of adding same color")
                 .isSameAs(nextBoard);
@@ -55,5 +56,37 @@ class BoardTest {
         assertThat(nextBoard3.toString())
                 .as("Checking toString")
                 .isEqualTo(board.toString());
+    }
+
+    @Test
+    void print() {
+        Board board = Board.empty();
+        Point point = Point.of(1, 1);
+        Move blackMove = Move.normalMove(Stone.Black, point);
+        Board nextBoard = board.withMove(blackMove, Prisoners.empty());
+        Move whiteMove = Move.normalMove(Stone.White, Point.of(4,4));
+        nextBoard = nextBoard.withMove(whiteMove, Prisoners.empty());
+        assertThat(nextBoard.print())
+                .as("Checking printing the board.")
+                .isEqualTo("    A B C D E F G H J K L M N O P Q R S T \n" +
+                        "19  . . . . . . . . . . . . . . . . . . . \n" +
+                        "18  . . . . . . . . . . . . . . . . . . . \n" +
+                        "17  . . . . . . . . . . . . . . . . . . . \n" +
+                        "16  . . . + . . . . . + . . . . . + . . . \n" +
+                        "15  . . . . . . . . . . . . . . . . . . . \n" +
+                        "14  . . . . . . . . . . . . . . . . . . . \n" +
+                        "13  . . . . . . . . . . . . . . . . . . . \n" +
+                        "12  . . . . . . . . . . . . . . . . . . . \n" +
+                        "11  . . . . . . . . . . . . . . . . . . . \n" +
+                        "10  . . . + . . . . . + . . . . . + . . . \n" +
+                        "9   . . . . . . . . . . . . . . . . . . . \n" +
+                        "8   . . . . . . . . . . . . . . . . . . . \n" +
+                        "7   . . . . . . . . . . . . . . . . . . . \n" +
+                        "6   . . . . . . . . . . . . . . . . . . . \n" +
+                        "5   . . . . . . . . . . . . . . . . . . . \n" +
+                        "4   . . . O . . . . . + . . . . . + . . . \n" +
+                        "3   . . . . . . . . . . . . . . . . . . . \n" +
+                        "2   . . . . . . . . . . . . . . . . . . . \n" +
+                        "1   X . . . . . . . . . . . . . . . . . . \n");
     }
 }

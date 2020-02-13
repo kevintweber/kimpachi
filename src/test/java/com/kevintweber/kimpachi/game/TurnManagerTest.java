@@ -22,7 +22,7 @@ class TurnManagerTest {
 
         Move firstMove = Move.normalMove(Stone.Black, Point.of(4, 4));
         Board firstBoard = Board.of(configuration);
-        firstBoard = firstBoard.withMove(firstMove);
+        firstBoard = firstBoard.withMove(firstMove, Prisoners.empty());
         turnManager.addTurn(
                 new Turn(firstBoard, firstMove, Prisoners.empty())
         );
@@ -32,7 +32,7 @@ class TurnManagerTest {
                 .isEqualTo(Stone.White);
 
         Move secondMove = Move.normalMove(Stone.White, Point.of(12, 12));
-        Board secondBoard = firstBoard.withMove(secondMove);
+        Board secondBoard = firstBoard.withMove(secondMove, Prisoners.empty());
         turnManager.addTurn(
                 new Turn(secondBoard, secondMove, Prisoners.empty())
         );
@@ -42,7 +42,7 @@ class TurnManagerTest {
                 .isEqualTo(Stone.Black);
 
         Move thirdMove = Move.passMove(Stone.Black);
-        Board thirdBoard = secondBoard.withMove(thirdMove);
+        Board thirdBoard = secondBoard.withMove(thirdMove, Prisoners.empty());
         turnManager.addTurn(
                 new Turn(thirdBoard, thirdMove, Prisoners.empty())
         );
@@ -52,7 +52,7 @@ class TurnManagerTest {
                 .isEqualTo(Stone.White);
 
         Move fourthMove = Move.passMove(Stone.White);
-        Board fourthBoard = thirdBoard.withMove(fourthMove);
+        Board fourthBoard = thirdBoard.withMove(fourthMove, Prisoners.empty());
         turnManager.addTurn(
                 new Turn(fourthBoard, fourthMove, Prisoners.empty())
         );

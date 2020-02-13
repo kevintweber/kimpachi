@@ -160,6 +160,17 @@ public final class Area {
         return without(position.getPoint());
     }
 
+    public Area without(@NonNull Set<Point> points) {
+        if (points.isEmpty()) {
+            return this;
+        }
+
+        Set<Point> currentPoints = getPoints();
+        currentPoints.removeAll(points);
+
+        return new Area(stone, Groups.associate(currentPoints));
+    }
+
     public static class Builder {
 
         private final Stone builderStone;
