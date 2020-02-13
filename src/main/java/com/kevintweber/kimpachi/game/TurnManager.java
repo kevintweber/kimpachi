@@ -1,5 +1,6 @@
 package com.kevintweber.kimpachi.game;
 
+import com.kevintweber.kimpachi.board.Board;
 import com.kevintweber.kimpachi.board.Stone;
 import com.kevintweber.kimpachi.exception.IllegalMoveException;
 import lombok.EqualsAndHashCode;
@@ -7,6 +8,7 @@ import lombok.NonNull;
 import lombok.ToString;
 
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 @EqualsAndHashCode
@@ -21,11 +23,12 @@ public final class TurnManager {
         this.turns = new LinkedList<>();
     }
 
-    public TurnManager(
-            @NonNull Configuration configuration,
-            @NonNull Deque<Turn> turns) {
-        this.configuration = configuration;
-        this.turns = turns;
+    public Board getCurrentBoard() {
+        if (turns.isEmpty()) {
+            return Board.of(configuration);
+        }
+
+        return turns.getLast().getBoard();
     }
 
     public Deque<Turn> getTurns() {
@@ -33,11 +36,7 @@ public final class TurnManager {
     }
 
     public void addTurn(@NonNull Turn turn) {
-        Stone nextMoveStone = getNextMoveStone();
-        if (!turn.getStone().equals(nextMoveStone)) {
-            throw new IllegalMoveException("Out of turn. Color must be " + nextMoveStone.toString());
-        }
-
+        validateTurn(turn);
         this.turns.addLast(turn);
     }
 
@@ -63,17 +62,15 @@ public final class TurnManager {
             return false;
         }
 
-        Turn lastMove = turns.removeLast();
-        if (!lastMove.isPass()) {
-            turns.addLast(lastMove);
-
+        Iterator<Turn> descendingIterator = turns.descendingIterator();
+        Turn lastTurn = descendingIterator.next();
+        if (!lastTurn.isPass()) {
             return false;
         }
 
-        Turn secondToLastMove = turns.getLast();
-        turns.addLast(lastMove);
+        Turn secondToLastTurn = descendingIterator.next();
 
-        return secondToLastMove.isPass();
+        return secondToLastTurn.isPass();
     }
 
     public String toSgf() {
@@ -83,5 +80,22 @@ public final class TurnManager {
         }
 
         return sb.toString();
+    }
+
+    private void validateTurn(Turn nextTurn) {
+        Stone nextMoveStone = getNextMoveStone();
+        if (!nextTurn.getStone().equals(nextMoveStone)) {
+            throw new IllegalMoveException("Out of turn. Color must be " + nextMoveStone.toString());
+        }
+
+        if (nextTurn.isPass()) {
+            return;
+        }
+
+        for (Turn turn : turns) {
+            if (turn.equals(nextTurn)) {
+                throw new IllegalMoveException("Illegal Ko move.");
+            }
+        }
     }
 }

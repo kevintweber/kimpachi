@@ -1,136 +1,183 @@
 package com.kevintweber.kimpachi.board;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
+import com.kevintweber.kimpachi.exception.InvalidStoneException;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+/**
+ * A collection of groups of the same color.
+ */
 @EqualsAndHashCode
 @ToString
 public final class Area {
 
-    private final ImmutableSet<Position> positions;
+    private final Stone stone;
+    private final ImmutableList<Group> groups;
 
-    private static final Area EMPTY = new Area(Set.of());
+    private static final Area EMPTY_BLACK = new Area(Stone.Black, List.of());
+    private static final Area EMPTY_WHITE = new Area(Stone.White, List.of());
 
-    private Area(@NonNull Set<Position> positions) {
-        this.positions = ImmutableSet.copyOf(positions);
+    private Area(
+            @NonNull Stone stone,
+            @NonNull List<Group> groups) {
+        this.stone = stone;
+        this.groups = ImmutableList.copyOf(groups);
     }
 
-    public static Area empty() {
-        return EMPTY;
+    public static Area empty(@NonNull Stone stone) {
+        if (stone.equals(Stone.Black)) {
+            return EMPTY_BLACK;
+        }
+
+        return EMPTY_WHITE;
     }
 
     public static Area copyOf(@NonNull Area otherArea) {
-        return new Area(otherArea.positions);
+        return new Area(otherArea.stone, otherArea.groups);
     }
 
-    public boolean contains(@NonNull Position position) {
-        return positions.contains(position);
-    }
-
-    public Area enlarge() {
-        Area enlargedArea = Area.copyOf(this);
-        for (Position position : positions) {
-            enlargedArea = enlargedArea.union(enlargePosition(position));
+    public static Area of(
+            @NonNull Stone stone,
+            @NonNull List<Group> groups) {
+        if (groups.isEmpty()) {
+            return empty(stone);
         }
 
-        return enlargedArea;
+        return new Area(stone, groups);
     }
 
-    public Area enlarge(int count) {
-        if (count < 1) {
-            return this;
-        }
-
-        Area startingArea = Area.copyOf(this);
-        for (int i = 0; i < count; i++) {
-            Area enlargedArea = startingArea.enlarge();
-            if (enlargedArea.equals(startingArea)) {
-                return enlargedArea;
+    public boolean contains(@NonNull Point point) {
+        for (Group group : groups) {
+            if (group.contains(point)) {
+                return true;
             }
-
-            startingArea = Area.copyOf(enlargedArea);
         }
 
-        return startingArea;
-    }
-
-    private Area enlargePosition(Position position) {
-        Area enlargedArea = new Area(Set.of(position));
-        int x = position.getX();
-        int y = position.getY();
-        enlargedArea = addPositionToArea(enlargedArea, x - 1, y);
-        enlargedArea = addPositionToArea(enlargedArea, x + 1, y);
-        enlargedArea = addPositionToArea(enlargedArea, x, y - 1);
-        enlargedArea = addPositionToArea(enlargedArea, x, y + 1);
-
-        return enlargedArea;
-    }
-
-    private Area addPositionToArea(Area area, int x, int y) {
-        try {
-            return area.with(Position.of(x, y));
-        } catch (Exception e) {
-            return area;
-        }
-    }
-
-    public Set<Position> getPositions() {
-        return new HashSet<>(positions);
+        return false;
     }
 
     public int count() {
-        return positions.size();
+        int count = 0;
+        for (Group group : groups) {
+            count += group.count();
+        }
+
+        return count;
+    }
+
+    public Stone getStone() {
+        return stone;
+    }
+
+    public List<Group> getGroups() {
+        return groups;
+    }
+
+    public Set<Point> getPoints() {
+        Set<Point> points = new HashSet<>();
+        for (Group group : groups) {
+            points.addAll(group.getPoints());
+        }
+
+        return points;
+    }
+
+    public Set<Position> getPositions() {
+        Set<Position> positions = new HashSet<>();
+        for (Group group : groups) {
+            for (Point point : group.getPoints()) {
+                positions.add(Position.of(stone, point));
+            }
+        }
+
+        return positions;
     }
 
     public Area intersection(@NonNull Area otherArea) {
-        Set<Position> commonPositions = new HashSet<>(positions);
-        commonPositions.retainAll(otherArea.positions);
+        if (!stone.equals(otherArea.stone)) {
+            throw new InvalidStoneException("Invalid stone: " + otherArea.getStone());
+        }
 
-        return new Area(commonPositions);
+        Set<Point> pointSet = getPoints();
+        pointSet.retainAll(otherArea.getPoints());
+
+        return new Area(stone, Groups.associate(pointSet));
     }
 
     public Area union(@NonNull Area otherArea) {
-        Set<Position> positionSet = new HashSet<>(positions);
-        positionSet.addAll(otherArea.positions);
+        if (!stone.equals(otherArea.getStone())) {
+            throw new InvalidStoneException("Invalid stone: " + otherArea.getStone());
+        }
 
-        return new Area(positionSet);
+        Set<Point> pointSet = getPoints();
+        pointSet.addAll(otherArea.getPoints());
+
+        return new Area(stone, Groups.associate(pointSet));
+    }
+
+    public Area with(@NonNull Point point) {
+        if (contains(point)) {
+            return this;
+        }
+
+        Set<Point> points = getPoints();
+        points.add(point);
+
+        return new Area(stone, Groups.associate(points));
     }
 
     public Area with(@NonNull Position position) {
-        Set<Position> positionSet = new HashSet<>(positions);
-        positionSet.add(position);
+        if (!stone.equals(position.getStone())) {
+            throw new InvalidStoneException("Invalid stone: " + position.getStone());
+        }
 
-        return new Area(positionSet);
+        return with(position.getPoint());
+    }
+
+    public Area without(@NonNull Point point) {
+        if (!contains(point)) {
+            return this;
+        }
+
+        Set<Point> points = getPoints();
+        points.remove(point);
+
+        return new Area(stone, Groups.associate(points));
     }
 
     public Area without(@NonNull Position position) {
-        Set<Position> positionSet = new HashSet<>(positions);
-        positionSet.remove(position);
+        if (!stone.equals(position.getStone())) {
+            throw new InvalidStoneException("Invalid stone: " + position.getStone());
+        }
 
-        return new Area(positionSet);
+        return without(position.getPoint());
     }
 
     public static class Builder {
 
-        private final Set<Position> builderPositions;
+        private final Stone builderStone;
+        private final List<Group> builderGroups;
 
-        public Builder() {
-            this.builderPositions = new HashSet<>();
+        public Builder(@NonNull Stone stone) {
+            this.builderStone = stone;
+            this.builderGroups = new ArrayList<>();
         }
 
-        public Builder addPosition(@NonNull Position position) {
-            this.builderPositions.add(position);
+        public Builder addGroup(@NonNull Group group) {
+            this.builderGroups.add(group);
 
             return this;
         }
 
         public Area build() {
-            return new Area(builderPositions);
+            return new Area(builderStone, builderGroups);
         }
     }
 }

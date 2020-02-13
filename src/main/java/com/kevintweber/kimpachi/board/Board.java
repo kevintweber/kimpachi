@@ -5,25 +5,31 @@ import com.kevintweber.kimpachi.game.Configuration;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
+import java.util.Set;
+
 @EqualsAndHashCode
 public final class Board {
 
+    public final static String positionCharacters = "ABCDEFGHJKLMNOPQRST";
+
     private final Area blackArea;
     private final Area whiteArea;
-    private final Area komi;
+    private final Komi komi;
 
-    private static final Board EMPTY = new Board(Area.empty(), Area.empty());
+    private static final Board EMPTY = new Board(Area.empty(Stone.Black), Area.empty(Stone.White));
 
     private Board(
             @NonNull Area blackArea,
             @NonNull Area whiteArea) {
-        if (blackArea.intersection(whiteArea).count() != 0) {
-            throw new ConfigurationException("Black and white areas must not overlap.");
+        Set<Point> blackPoints = blackArea.getPoints();
+        blackPoints.retainAll(whiteArea.getPoints());
+        if (!blackPoints.isEmpty()) {
+            throw new ConfigurationException("Black and white areas overlap.");
         }
 
         this.blackArea = Area.copyOf(blackArea);
         this.whiteArea = Area.copyOf(whiteArea);
-        this.komi = Area.copyOf(Komi.getKomi());
+        this.komi = Komi.KOMI;
     }
 
     public static Board copyOf(@NonNull Board otherBoard) {
@@ -35,83 +41,103 @@ public final class Board {
     }
 
     public static Board of(@NonNull Configuration configuration) {
-        Board empty = Board.empty();
         if (configuration.getHandicap() <= 1) {
-            return empty;
+            return EMPTY;
         }
 
         Area blackHandicapArea = Handicap.getHandicap(configuration);
 
-        return new Board(blackHandicapArea, Area.empty());
+        return new Board(blackHandicapArea, Area.empty(Stone.White));
     }
 
-    public Board clear(@NonNull Position position) {
-        Color color = getColor(position);
+    public Board clear(@NonNull Point point) {
+        Color color = getColor(point);
         if (color.equals(Color.Empty)) {
             return this;
         }
 
-        return modifyPosition(position, Color.Empty);
+        return modifyPosition(point, Color.Empty);
     }
 
-    public Color getColor(@NonNull Position position) {
-        if (blackArea.contains(position)) {
+    public Board clear(@NonNull Board otherBoard) {
+        Board resultBoard = Board.copyOf(this);
+        for (Point blackPoint : otherBoard.blackArea.getPoints()) {
+            resultBoard = clear(blackPoint);
+        }
+
+        for (Point whitePoint : otherBoard.whiteArea.getPoints()) {
+            resultBoard = clear(whitePoint);
+        }
+
+        return resultBoard;
+    }
+
+    public Color getColor(@NonNull Point point) {
+        if (blackArea.contains(point)) {
             return Color.Black;
         }
 
-        if (whiteArea.contains(position)) {
+        if (whiteArea.contains(point)) {
             return Color.White;
         }
 
         return Color.Empty;
     }
 
-    public boolean isKomi(@NonNull Position position) {
-        return komi.contains(position);
+    public boolean isKomi(@NonNull Point point) {
+        return komi.isKomi(point);
     }
 
-    public boolean isOccupied(@NonNull Position position) {
-        Color color = getColor(position);
+    public boolean isOccupied(@NonNull Point point) {
+        Color color = getColor(point);
 
         return !color.equals(Color.Empty);
     }
 
     public Board withMove(@NonNull Move move) {
-        Color currentColor = getColor(move.getPosition());
+        if (move.isPassMove()) {
+            return this;
+        }
+
+        Color currentColor = getColor(move.getPoint());
         if (currentColor.equals(Color.of(move.getStone()))) {
             return this;
         }
 
-        return modifyPosition(move.getPosition(), Color.of(move.getStone()));
+        return modifyPosition(move.getPoint(), Color.of(move.getStone()));
     }
 
-    private Board modifyPosition(Position position, Color color) {
+    private Board modifyPosition(Point point, Color color) {
         if (color.equals(Color.Empty)) {
-            return new Board(blackArea.without(position), whiteArea.without(position));
+            return new Board(blackArea.without(point), whiteArea.without(point));
         }
 
         if (color.equals(Color.Black)) {
-            return new Board(blackArea.with(position), whiteArea.without(position));
+            return new Board(blackArea.with(point), whiteArea.without(point));
         }
 
-        return new Board(blackArea.without(position), whiteArea.with(position));
+        return new Board(blackArea.without(point), whiteArea.with(point));
     }
 
     public void toStdOut() {
-        String header = "   ";
+        String header = "    ";
         for (int i = 0; i < 19; i++) {
-            header += Position.sgfCharacters.charAt(i) + " ";
+            header += Board.positionCharacters.charAt(i) + " ";
         }
 
         System.out.println(header);
 
-        for (int y = 1; y <= 19; y++) {
-            String row = Position.sgfCharacters.charAt(y - 1) + "  ";
+        for (int y = 19; y >= 1; y--) {
+            String row = y + "  ";
+            if (y < 10) {
+                row += " ";
+            }
+
             for (int x = 1; x <= 19; x++) {
-                Position position = Position.of(x, y);
-                switch (getColor(position)) {
+                Point point = Point.of(x, y);
+                switch (getColor(point)) {
                     case Empty:
-                        if (isKomi(position)) {
+                        if (isKomi(point)) {
                             row += "+ ";
                         } else {
                             row += ". ";

@@ -1,23 +1,23 @@
 package com.kevintweber.kimpachi.exception;
 
-public class NonAdjacentPositionException extends KimpachiException {
+public class UnconnectedException extends KimpachiException {
 
-    public NonAdjacentPositionException() {
+    public UnconnectedException() {
     }
 
-    public NonAdjacentPositionException(String message) {
+    public UnconnectedException(String message) {
         super(message);
     }
 
-    public NonAdjacentPositionException(String message, Throwable cause) {
+    public UnconnectedException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public NonAdjacentPositionException(Throwable cause) {
+    public UnconnectedException(Throwable cause) {
         super(cause);
     }
 
-    public NonAdjacentPositionException(
+    public UnconnectedException(
             String message,
             Throwable cause,
             boolean enableSuppression,

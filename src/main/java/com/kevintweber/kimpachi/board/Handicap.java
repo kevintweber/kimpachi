@@ -3,62 +3,52 @@ package com.kevintweber.kimpachi.board;
 import com.kevintweber.kimpachi.game.Configuration;
 import lombok.NonNull;
 
-import java.util.List;
+import java.util.Set;
 
 public final class Handicap {
 
     public static Area getHandicap(@NonNull Configuration configuration) {
         int handicap = configuration.getHandicap();
-
         if (handicap <= 1) {
-            return Area.empty();
+            return Area.empty(Stone.Black);
         }
 
-        List<Position> handicapPositions;
+        Set<Point> handicapPoints;
         switch (handicap) {
             case 2:
             case 3:
             case 4:
-                handicapPositions = getHandicapList2Thru4();
+                handicapPoints = getHandicapList2Thru4(handicap);
                 break;
 
             case 5:
             case 6:
             case 7:
-                handicapPositions = getHandicapList5Thru7();
+                handicapPoints = getHandicapList5Thru7(handicap);
                 break;
 
             default:
-                handicapPositions = getHandicapOver8();
+                handicapPoints = getHandicapOver8(handicap);
         }
 
-        Area handicapArea = Area.empty();
-        for (int i = 0; i < handicap; i++) {
-            if (i >= handicapPositions.size()) {
-                break;
-            }
-
-            handicapArea = handicapArea.with(handicapPositions.get(i));
-        }
-
-        return handicapArea;
+        return Area.of(Stone.Black, Groups.associate(handicapPoints));
     }
 
-    private static List<Position> getHandicapList2Thru4() {
-        return List.of(
-                Position.of(3, 3)
+    private static Set<Point> getHandicapList2Thru4(int handicap) {
+        return Set.of(
+                Point.of(3, 3)
         );
     }
 
-    private static List<Position> getHandicapList5Thru7() {
-        return List.of(
-                Position.of(4, 4)
+    private static Set<Point> getHandicapList5Thru7(int handicap) {
+        return Set.of(
+                Point.of(4, 4)
         );
     }
 
-    private static List<Position> getHandicapOver8() {
-        return List.of(
-                Position.of(4, 4)
+    private static Set<Point> getHandicapOver8(int handicap) {
+        return Set.of(
+                Point.of(4, 4)
         );
     }
 }

@@ -19,23 +19,23 @@ class BoardTest {
     @Test
     void boardManipulations() {
         Board board = Board.empty();
-        Position position = Position.of(1, 1);
-        assertThat(board.getColor(position))
+        Point point = Point.of(1, 1);
+        assertThat(board.getColor(point))
                 .as("Checking empty position")
                 .isEqualTo(Color.Empty);
-        assertThat(board.isOccupied(position))
+        assertThat(board.isOccupied(point))
                 .as("Checking position is not occupied")
                 .isFalse();
 
-        Move blackMove = Move.normalMove(Stone.Black, position);
+        Move blackMove = Move.normalMove(Stone.Black, point);
         Board nextBoard = board.withMove(blackMove);
         assertThat(nextBoard)
                 .as("Checking boards are immutable")
                 .isNotEqualTo(board);
-        assertThat(nextBoard.getColor(position))
+        assertThat(nextBoard.getColor(point))
                 .as("Checking modified position")
                 .isEqualTo(Color.Black);
-        assertThat(nextBoard.isOccupied(position))
+        assertThat(nextBoard.isOccupied(point))
                 .as("Checking position is occupied")
                 .isTrue();
         assertThat(nextBoard.toString())
@@ -47,7 +47,7 @@ class BoardTest {
                 .as("Checking immutability of adding same color")
                 .isSameAs(nextBoard);
 
-        Board nextBoard3 = nextBoard.clear(position);
+        Board nextBoard3 = nextBoard.clear(point);
         assertThat(nextBoard3)
                 .as("Checking cyclic immutablility")
                 .isNotSameAs(board)

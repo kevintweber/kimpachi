@@ -1,8 +1,8 @@
 package com.kevintweber.kimpachi.game;
 
 import com.google.common.collect.ImmutableSet;
-import com.kevintweber.kimpachi.board.Color;
-import com.kevintweber.kimpachi.board.Position;
+import com.kevintweber.kimpachi.board.Point;
+import com.kevintweber.kimpachi.board.Stone;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -11,21 +11,21 @@ import java.util.Set;
 @Data
 public final class Prisoners {
 
-    private final ImmutableSet<Position> blackPrisoners;
-    private final ImmutableSet<Position> whitePrisoners;
+    private final ImmutableSet<Point> blackPrisoners;
+    private final ImmutableSet<Point> whitePrisoners;
 
     private static final Prisoners EMPTY = new Prisoners(Set.of(), Set.of());
 
     private Prisoners(
-            @NonNull Set<Position> blackPrisoners,
-            @NonNull Set<Position> whitePrisoners) {
+            @NonNull Set<Point> blackPrisoners,
+            @NonNull Set<Point> whitePrisoners) {
         this.blackPrisoners = ImmutableSet.copyOf(blackPrisoners);
         this.whitePrisoners = ImmutableSet.copyOf(whitePrisoners);
     }
 
     public static Prisoners of(
-            @NonNull Set<Position> blackPrisoners,
-            @NonNull Set<Position> whitePrisoners) {
+            @NonNull Set<Point> blackPrisoners,
+            @NonNull Set<Point> whitePrisoners) {
         if (blackPrisoners.isEmpty() && whitePrisoners.isEmpty()) {
             return EMPTY;
         }
@@ -37,20 +37,8 @@ public final class Prisoners {
         return EMPTY;
     }
 
-    public int countBlackPrisoners() {
-        return count(Color.Black);
-    }
-
-    public int countWhitePrisoners() {
-        return count(Color.White);
-    }
-
-    private int count(Color color) {
-        if (color.equals(Color.Empty)) {
-            throw new IllegalStateException("Prisoners cannot be empty color.");
-        }
-
-        if (color.equals(Color.Black)) {
+    private int count(Stone stone) {
+        if (stone.equals(Stone.Black)) {
             return blackPrisoners.size();
         }
 

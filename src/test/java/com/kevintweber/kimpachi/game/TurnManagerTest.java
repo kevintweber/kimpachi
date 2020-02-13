@@ -1,68 +1,68 @@
 package com.kevintweber.kimpachi.game;
 
+import com.kevintweber.kimpachi.board.Board;
 import com.kevintweber.kimpachi.board.Move;
-import com.kevintweber.kimpachi.board.Position;
+import com.kevintweber.kimpachi.board.Point;
 import com.kevintweber.kimpachi.board.Stone;
 import org.junit.jupiter.api.Test;
-
-import java.util.LinkedList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TurnManagerTest {
 
     @Test
-    void getNextMoveStone() {
-        Configuration configuration = new Configuration.Builder().build();
-        TurnManager turnManager = new TurnManager(configuration, new LinkedList<>());
+    void isGameOver() {
+        Configuration configuration = new Configuration.Builder()
+                .build();
+        TurnManager turnManager = new TurnManager(configuration);
+        assertThat(turnManager.isGameOver())
+                .isFalse();
         assertThat(turnManager.getNextMoveStone())
-                .as("Checking first move Stone")
                 .isEqualTo(Stone.Black);
 
+        Move firstMove = Move.normalMove(Stone.Black, Point.of(4, 4));
+        Board firstBoard = Board.of(configuration);
+        firstBoard = firstBoard.withMove(firstMove);
         turnManager.addTurn(
-                new Turn(Move.normalMove(Stone.Black, Position.of(2, 2)))
+                new Turn(firstBoard, firstMove, Prisoners.empty())
         );
+        assertThat(turnManager.isGameOver())
+                .isFalse();
         assertThat(turnManager.getNextMoveStone())
-                .as("Checking next Stone")
                 .isEqualTo(Stone.White);
-    }
 
-    @Test
-    void isGameOver() {
-        Configuration configuration = new Configuration.Builder().build();
-        TurnManager turnManager = new TurnManager(configuration, new LinkedList<>());
+        Move secondMove = Move.normalMove(Stone.White, Point.of(12, 12));
+        Board secondBoard = firstBoard.withMove(secondMove);
         turnManager.addTurn(
-                new Turn(Move.normalMove(Stone.Black, Position.of(2, 2)))
+                new Turn(secondBoard, secondMove, Prisoners.empty())
         );
-
         assertThat(turnManager.isGameOver())
-                .as("Checking is game over after 1 turn")
                 .isFalse();
+        assertThat(turnManager.getNextMoveStone())
+                .isEqualTo(Stone.Black);
 
+        Move thirdMove = Move.passMove(Stone.Black);
+        Board thirdBoard = secondBoard.withMove(thirdMove);
         turnManager.addTurn(
-                new Turn(Move.normalMove(Stone.White, Position.of(3, 3)))
+                new Turn(thirdBoard, thirdMove, Prisoners.empty())
         );
-
         assertThat(turnManager.isGameOver())
-                .as("Checking is game over after 2 turns")
                 .isFalse();
+        assertThat(turnManager.getNextMoveStone())
+                .isEqualTo(Stone.White);
 
-        turnManager.addTurn(new Turn(Move.passMove(Stone.Black)));
-        assertThat(turnManager.isGameOver())
-                .as("Checking is game over after 1 pass move")
-                .isFalse();
-
+        Move fourthMove = Move.passMove(Stone.White);
+        Board fourthBoard = thirdBoard.withMove(fourthMove);
         turnManager.addTurn(
-                new Turn(Move.normalMove(Stone.White, Position.of(4, 4)))
+                new Turn(fourthBoard, fourthMove, Prisoners.empty())
         );
-        turnManager.addTurn(new Turn(Move.passMove(Stone.Black)));
         assertThat(turnManager.isGameOver())
-                .as("Checking is game over after 2 non-consecutinve pass moves")
-                .isFalse();
-
-        turnManager.addTurn(new Turn(Move.passMove(Stone.White)));
-        assertThat(turnManager.isGameOver())
-                .as("Checking is game over after 2 non-consecutinve pass moves")
                 .isTrue();
+        assertThat(turnManager.getNextMoveStone())
+                .isEqualTo(Stone.Black);
+
+        assertThat(turnManager.toSgf())
+                .as("Checking SGF output")
+                .isEqualTo(";B[dd];W[ll];B[];W[]");
     }
 }

@@ -1,4 +1,4 @@
-package com.kevintweber.kimpachi.utilities;
+package com.kevintweber.kimpachi.sgf;
 
 import lombok.Data;
 import lombok.NonNull;
@@ -13,6 +13,10 @@ public final class SgfToken {
             @NonNull String key,
             @NonNull String value) {
         this.key = key.toUpperCase().trim();
-        this.value = value.trim();
+        if (this.key.equals("B") || this.key.equals("W")) {
+            this.value = value.trim().toUpperCase();
+        } else {
+            this.value = value.trim();
+        }
     }
 }

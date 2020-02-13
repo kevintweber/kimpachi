@@ -1,53 +1,42 @@
 package com.kevintweber.kimpachi.board;
 
-import com.kevintweber.kimpachi.exception.InvalidPositionException;
-import com.kevintweber.kimpachi.exception.SgfException;
 import lombok.Data;
 import lombok.NonNull;
 
 import java.util.Comparator;
 
+/**
+ * A point associated with a stone color.
+ */
 @Data
 public final class Position implements Comparable<Position> {
 
-    public final static String sgfCharacters = "abcdefghijklmnopqrstuvwxyz";
+    private final Stone stone;
+    private final Point point;
 
-    private final int x;
-    private final int y;
-
-    private Position(int x, int y) {
-        if (x <= 0 || y <= 0 || x > 19 || y > 19) {
-            throw new InvalidPositionException("Invalid position: x=" + x + ";y=" + y);
-        }
-
-        this.x = x;
-        this.y = y;
+    private Position(
+            @NonNull Stone stone,
+            @NonNull Point point) {
+        this.stone = stone;
+        this.point = point;
     }
 
-    public static Position of(int x, int y) {
-        return new Position(x, y);
+    public static Position copyOf(@NonNull Position position) {
+        return new Position(position.stone, position.point);
     }
 
-    public static Position fromSgf(@NonNull String sgfPosition) {
-        if (sgfPosition.length() != 2) {
-            throw new SgfException("Invalid SGF position string length. Value=" + sgfPosition);
-        }
-
-        String[] characters = sgfPosition.split("");
-        int x = sgfCharacters.indexOf(characters[0]) + 1;
-        int y = sgfCharacters.indexOf(characters[1]) + 1;
-
-        return of(x, y);
+    public static Position of(
+            @NonNull Stone stone,
+            @NonNull Point point) {
+        return new Position(stone, point);
     }
 
-    public boolean isAdjacent(@NonNull Position otherPosition) {
-        int otherX = otherPosition.getX();
-        int otherY = otherPosition.getY();
-        if (x == otherX && Math.abs(y - otherY) == 1) {
-            return true;
-        }
+    public boolean isAdjacent(@NonNull Point otherPoint) {
+        return point.isAdjacent(otherPoint);
+    }
 
-        return y == otherY && Math.abs(x - otherX) == 1;
+    public boolean isAdjacent(@NonNull Position position) {
+        return point.isAdjacent(position.getPoint());
     }
 
     @Override
@@ -56,13 +45,15 @@ public final class Position implements Comparable<Position> {
             return -1;
         }
 
-        return Comparator.comparing(Position::getX)
-                .thenComparing(Position::getY)
+        return Comparator.comparing(Position::getStone)
+                .thenComparing(Position::getPoint)
                 .compare(this, o);
     }
 
     @Override
     public String toString() {
-        return sgfCharacters.substring(x - 1, x) + sgfCharacters.substring(y - 1, y);
+        String result = stone.equals(Stone.Black) ? "B[" : "W[";
+
+        return result + point.toString() + "]";
     }
 }

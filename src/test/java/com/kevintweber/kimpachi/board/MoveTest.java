@@ -1,6 +1,7 @@
 package com.kevintweber.kimpachi.board;
 
-import com.kevintweber.kimpachi.utilities.SgfToken;
+import com.kevintweber.kimpachi.sgf.SgfToken;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -8,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MoveTest {
 
@@ -24,13 +26,13 @@ class MoveTest {
         return Stream.of(
                 Arguments.of(
                         "Black normal move",
-                        new SgfToken("B", "aa"),
-                        Move.normalMove(Stone.Black, Position.of(1, 1))
+                        new SgfToken("B", "AA"),
+                        Move.normalMove(Stone.Black, Point.of(1, 1))
                 ),
                 Arguments.of(
                         "White normal move",
-                        new SgfToken("W", "ca"),
-                        Move.normalMove(Stone.White, Position.of(3, 1))
+                        new SgfToken("W", "CA"),
+                        Move.normalMove(Stone.White, Point.of(3, 1))
                 ),
                 Arguments.of(
                         "Black pass move",
@@ -68,14 +70,33 @@ class MoveTest {
                 ),
                 Arguments.of(
                         "Black normal move",
-                        Move.normalMove(Stone.Black, Position.of(2,4)),
+                        Move.normalMove(Stone.Black, Point.of(2,4)),
                         "B[bd]"
                 ),
                 Arguments.of(
                         "White normal move",
-                        Move.normalMove(Stone.White, Position.of(4,2)),
+                        Move.normalMove(Stone.White, Point.of(4,2)),
                         "W[db]"
                 )
         );
+    }
+
+    @Test
+    void toPositionAndPoint() {
+        Move move1 = Move.normalMove(Stone.Black, Point.of(2,4));
+        assertThat(move1.getPosition())
+                .as("Checking position")
+                .isEqualTo(Position.of(Stone.Black, Point.of(2,4)));
+        assertThat(move1.getPoint())
+                .as("Checking point")
+                .isEqualTo(Point.of(2,4));
+
+        Move move2 = Move.passMove(Stone.Black);
+        assertThatThrownBy(move2::getPosition)
+                .as("Checking position of pass move")
+                .isInstanceOf(IllegalStateException.class);
+        assertThat(move2.getPoint())
+                .as("Checking point of pass move")
+                .isNull();
     }
 }

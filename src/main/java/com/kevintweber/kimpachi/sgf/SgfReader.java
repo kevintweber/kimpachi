@@ -1,4 +1,4 @@
-package com.kevintweber.kimpachi.utilities;
+package com.kevintweber.kimpachi.sgf;
 
 import com.kevintweber.kimpachi.board.Move;
 import com.kevintweber.kimpachi.game.Configuration;

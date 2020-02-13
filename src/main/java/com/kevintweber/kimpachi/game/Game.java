@@ -1,8 +1,7 @@
 package com.kevintweber.kimpachi.game;
 
-import com.kevintweber.kimpachi.board.BoardManager;
+import com.kevintweber.kimpachi.board.Board;
 import com.kevintweber.kimpachi.board.Move;
-import com.kevintweber.kimpachi.exception.IllegalMoveException;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,17 +14,14 @@ public final class Game {
     private static final Logger logger = LoggerFactory.getLogger(Game.class);
 
     private final UUID gameId;
-    private final BoardManager boardManager;
     private final Configuration configuration;
     private final TurnManager turnManager;
 
     private Game(
             @NonNull UUID gameId,
-            @NonNull BoardManager boardManager,
             @NonNull Configuration configuration,
             @NonNull TurnManager turnManager) {
         this.gameId = gameId;
-        this.boardManager = boardManager;
         this.configuration = configuration;
         this.turnManager = turnManager;
     }
@@ -33,7 +29,6 @@ public final class Game {
     public static Game newGame(@NonNull Configuration configuration) {
         return new Game(
                 UUID.randomUUID(),
-                BoardManager.newBoard(configuration),
                 configuration,
                 new TurnManager(configuration)
         );
@@ -41,12 +36,10 @@ public final class Game {
 
     public static Game inProgressGame(
             @NonNull UUID gameId,
-            @NonNull BoardManager boardManager,
             @NonNull Configuration configuration,
             @NonNull TurnManager turnManager) {
         return new Game(
                 gameId,
-                boardManager,
                 configuration,
                 turnManager
         );
@@ -54,20 +47,35 @@ public final class Game {
 
     public void addMove(@NonNull Move move) {
         logger.info("Add move: {}", move);
-        if (!boardManager.isMoveValid(move)) {
-            throw new IllegalMoveException("Move is illegal: " + move);
-        }
+        if (move.isPassMove()) {
+            addMove(
+                    turnManager.getCurrentBoard(),
+                    move,
+                    Prisoners.empty()
+            );
 
-        if (!configuration.getRules().isMoveValid(move, boardManager.getBoard())) {
-            throw new IllegalMoveException("Move is illegal: " + move);
+            return;
         }
 
         Turn turn = new Turn(
+                turnManager.getCurrentBoard().withMove(move),
                 move,
-                boardManager.getPrisoners(move)
+                Prisoners.empty() //temp
         );
 
-        boardManager.addTurn(turn);
+        turnManager.addTurn(turn);
+    }
+
+    private void addMove(
+            Board board,
+            Move move,
+            Prisoners prisoners) {
+        Turn turn = new Turn(
+                turnManager.getCurrentBoard(),
+                move,
+                Prisoners.empty()
+        );
+
         turnManager.addTurn(turn);
     }
 
@@ -89,7 +97,7 @@ public final class Game {
     }
 
     public void toStdOut() {
-        boardManager.getBoard().toStdOut();
+        turnManager.getCurrentBoard().toStdOut();
     }
 
     @Override
