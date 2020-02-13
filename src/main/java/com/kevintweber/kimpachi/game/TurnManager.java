@@ -85,7 +85,7 @@ public final class TurnManager {
     private void validateTurn(Turn nextTurn) {
         Stone nextMoveStone = getNextMoveStone();
         if (!nextTurn.getStone().equals(nextMoveStone)) {
-            throw new IllegalMoveException("Out of turn. Color must be " + nextMoveStone.toString());
+            throw new IllegalMoveException("Out of turn. Stone must be " + nextMoveStone.toString());
         }
 
         if (nextTurn.isPass()) {

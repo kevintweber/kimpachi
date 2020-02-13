@@ -1,7 +1,9 @@
 package com.kevintweber.kimpachi.game;
 
+import com.kevintweber.kimpachi.board.Area;
 import com.kevintweber.kimpachi.board.Board;
 import com.kevintweber.kimpachi.board.Move;
+import com.kevintweber.kimpachi.board.Stone;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,23 +50,38 @@ public final class Game {
     public void addMove(@NonNull Move move) {
         logger.info("Add move: {}", move);
         if (move.isPassMove()) {
-            addMove(
-                    turnManager.getCurrentBoard(),
-                    move,
-                    Prisoners.empty()
-            );
+            addMove(turnManager.getCurrentBoard(), move, Prisoners.empty());
 
             return;
         }
 
-        Prisoners prisoners = Prisoners.empty(); // temp
-        Turn turn = new Turn(
-                turnManager.getCurrentBoard().withMove(move, prisoners),
-                move,
-                prisoners
-        );
+        Board currentBoard = turnManager.getCurrentBoard();
+        Prisoners prisoners = determinePrisoners(currentBoard, move);
+        if (logger.isDebugEnabled() && !prisoners.isEmpty()) {
+            logger.debug("Prisoners found: {}", prisoners);
+        }
 
+        Turn turn = new Turn(currentBoard.withMove(move, prisoners), move, prisoners);
         turnManager.addTurn(turn);
+    }
+
+    private Prisoners determinePrisoners(
+            Board currentBoard,
+            Move move) {
+        Board nextBoard = currentBoard.withMove(move, Prisoners.empty());
+        if (move.getStone().equals(Stone.Black)) {
+            Area whiteDeadArea = nextBoard.getDeadArea(Stone.White);
+            nextBoard = nextBoard.clear(whiteDeadArea);
+            Area blackDeadArea = nextBoard.getDeadArea(Stone.Black);
+
+            return Prisoners.of(blackDeadArea.getPoints(), whiteDeadArea.getPoints());
+        }
+
+        Area blackDeadArea = nextBoard.getDeadArea(Stone.Black);
+        nextBoard = nextBoard.clear(blackDeadArea);
+        Area whiteDeadArea = nextBoard.getDeadArea(Stone.White);
+
+        return Prisoners.of(blackDeadArea.getPoints(), whiteDeadArea.getPoints());
     }
 
     private void addMove(
@@ -72,9 +89,9 @@ public final class Game {
             Move move,
             Prisoners prisoners) {
         Turn turn = new Turn(
-                turnManager.getCurrentBoard(),
+                board,
                 move,
-                Prisoners.empty()
+                prisoners
         );
 
         turnManager.addTurn(turn);

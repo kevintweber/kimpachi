@@ -111,6 +111,10 @@ public final class Area {
         return new Area(stone, Groups.associate(pointSet));
     }
 
+    public boolean isEmpty() {
+        return groups.isEmpty();
+    }
+
     public Area union(@NonNull Area otherArea) {
         if (!stone.equals(otherArea.getStone())) {
             throw new InvalidStoneException("Invalid stone: " + otherArea.getStone());
@@ -139,6 +143,21 @@ public final class Area {
         }
 
         return with(position.getPoint());
+    }
+
+    public Area without(@NonNull Area area) {
+        if (!stone.equals(area.getStone())) {
+            throw new InvalidStoneException("Invalid stone: " + area.getStone());
+        }
+
+        if (area.isEmpty()) {
+            return this;
+        }
+
+        Set<Point> currentPoints = getPoints();
+        currentPoints.removeAll(area.getPoints());
+
+        return new Area(stone, Groups.associate(currentPoints));
     }
 
     public Area without(@NonNull Point point) {

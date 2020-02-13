@@ -157,6 +157,17 @@ public final class Group {
         return false;
     }
 
+    public boolean isDead(@NonNull Board board) {
+        Set<Point> neighboringPoints = getNeighboringPoints();
+        for (Point point : neighboringPoints) {
+            if (!board.isOccupied(point)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public boolean isEmpty() {
         return false;
     }

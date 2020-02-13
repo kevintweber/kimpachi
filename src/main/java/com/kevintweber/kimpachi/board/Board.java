@@ -6,6 +6,8 @@ import com.kevintweber.kimpachi.game.Prisoners;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @EqualsAndHashCode
@@ -51,6 +53,12 @@ public final class Board {
         return new Board(blackHandicapArea, Area.empty(Stone.White));
     }
 
+    public static Board of(
+            @NonNull Area blackArea,
+            @NonNull Area whiteArea) {
+        return new Board(blackArea, whiteArea);
+    }
+
     public Board clear(@NonNull Point point) {
         Color color = getColor(point);
         if (color.equals(Color.Empty)) {
@@ -60,17 +68,40 @@ public final class Board {
         return modifyPosition(point, Color.Empty);
     }
 
-    public Board clear(@NonNull Board otherBoard) {
+    public Board clear(@NonNull Area area) {
+        if (area.isEmpty()) {
+            return this;
+        }
+
         Board resultBoard = Board.copyOf(this);
-        for (Point blackPoint : otherBoard.blackArea.getPoints()) {
-            resultBoard = clear(blackPoint);
+        if (area.getStone().equals(Stone.Black)) {
+            Area newBlackArea = blackArea.without(area);
+
+            return new Board(newBlackArea, whiteArea);
         }
 
-        for (Point whitePoint : otherBoard.whiteArea.getPoints()) {
-            resultBoard = clear(whitePoint);
+        Area newWhiteArea = whiteArea.without(area);
+
+        return new Board(blackArea, newWhiteArea);
+    }
+
+    private Area getArea(Stone stone) {
+        if (stone.equals(Stone.Black)) {
+            return blackArea;
         }
 
-        return resultBoard;
+        return whiteArea;
+    }
+
+    public Area getDeadArea(@NonNull Stone stone) {
+        List<Group> deadGroups = new ArrayList<>();
+        for (Group group : getArea(stone).getGroups()) {
+            if (group.isDead(this)) {
+                deadGroups.add(group);
+            }
+        }
+
+        return Area.of(stone, deadGroups);
     }
 
     public Color getColor(@NonNull Point point) {
