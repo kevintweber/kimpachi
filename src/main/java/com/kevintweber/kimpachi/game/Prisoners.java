@@ -45,6 +45,10 @@ public final class Prisoners {
         return whitePrisoners.size();
     }
 
+    public PrisonerCount getPrisonerCount() {
+        return new PrisonerCount(blackPrisoners.size(), whitePrisoners.size());
+    }
+
     public boolean isEmpty() {
         return blackPrisoners.isEmpty() && whitePrisoners.isEmpty();
     }

@@ -16,7 +16,7 @@ class ConfigurationTest {
         Configuration configuration = new Configuration.Builder()
                 .withHandicap(0)
                 .withKomi(new BigDecimal("0.5"))
-                .withRules(RuleSet.JapaneseRules)
+                .withRules(RuleSet.Japanese)
                 .withBlackName("Black Name")
                 .withBlackRank(Rank.dan4)
                 .withWhiteName("White Name")

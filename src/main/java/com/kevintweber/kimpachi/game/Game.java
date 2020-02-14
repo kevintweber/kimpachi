@@ -4,11 +4,13 @@ import com.kevintweber.kimpachi.board.Area;
 import com.kevintweber.kimpachi.board.Board;
 import com.kevintweber.kimpachi.board.Move;
 import com.kevintweber.kimpachi.board.Stone;
+import com.kevintweber.kimpachi.rules.Score;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Deque;
+import java.util.Optional;
 import java.util.UUID;
 
 public final class Game {
@@ -50,7 +52,13 @@ public final class Game {
     public void addMove(@NonNull Move move) {
         logger.info("Add move: {}", move);
         if (move.isPassMove()) {
-            addMove(turnManager.getCurrentBoard(), move, Prisoners.empty());
+            Turn turn = new Turn(
+                    turnManager.getCurrentBoard(),
+                    move,
+                    Prisoners.empty()
+            );
+
+            turnManager.addTurn(turn);
 
             return;
         }
@@ -84,25 +92,20 @@ public final class Game {
         return Prisoners.of(blackDeadArea.getPoints(), whiteDeadArea.getPoints());
     }
 
-    private void addMove(
-            Board board,
-            Move move,
-            Prisoners prisoners) {
-        Turn turn = new Turn(
-                board,
-                move,
-                prisoners
-        );
-
-        turnManager.addTurn(turn);
-    }
-
     public UUID getGameId() {
         return gameId;
     }
 
     public Configuration getConfiguration() {
         return configuration;
+    }
+
+    public Optional<Score> getScore() {
+        return configuration.getRules().getScore(
+                configuration.getKomi(),
+                turnManager.getCurrentBoard(),
+                turnManager.getTotalPrisoners()
+        );
     }
 
     public Deque<Turn> getTurns() {

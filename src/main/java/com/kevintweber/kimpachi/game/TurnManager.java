@@ -57,6 +57,15 @@ public final class TurnManager {
         return Stone.Black;
     }
 
+    public PrisonerCount getTotalPrisoners() {
+        PrisonerCount results = new PrisonerCount(0,0);
+        for (Turn turn : turns) {
+            results = results.add(turn.getPrisoners().getPrisonerCount());
+        }
+
+        return results;
+    }
+
     public boolean isGameOver() {
         if (turns.size() < 2) {
             return false;
@@ -96,6 +105,10 @@ public final class TurnManager {
             if (turn.equals(nextTurn)) {
                 throw new IllegalMoveException("Illegal Ko move.");
             }
+        }
+
+        if (!configuration.getRules().isMoveValid(nextTurn)) {
+            throw new IllegalMoveException(configuration.getRules().getRuleSet().toString() + ": Invalid move.");
         }
     }
 }

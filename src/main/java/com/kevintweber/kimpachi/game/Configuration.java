@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NonNull;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -30,7 +31,7 @@ public final class Configuration {
             @NonNull Players players,
             @NonNull LocalDate date) {
         this.handicap = handicap;
-        this.komi = komi;
+        this.komi = komi.setScale(1, RoundingMode.HALF_UP);
         this.rules = rules;
         this.players = players;
         this.date = LocalDate.from(date);
@@ -46,7 +47,7 @@ public final class Configuration {
         sb.append("KM[" + komi.toPlainString() + "]HA[" + handicap + "]\n");
         sb.append("DT[" + date.format(DateTimeFormatter.ISO_LOCAL_DATE) + "]\n");
         sb.append(rules.toSgf());
-        sb.append("\n");
+        sb.append("\n\n");
 
         return sb.toString();
     }
@@ -79,7 +80,7 @@ public final class Configuration {
         }
 
         public Builder withRules(@NonNull RuleSet ruleSet) {
-            if (ruleSet.equals(RuleSet.JapaneseRules)) {
+            if (ruleSet.equals(RuleSet.Japanese)) {
                 this.builderRules = new JapaneseRules();
 
                 return this;
