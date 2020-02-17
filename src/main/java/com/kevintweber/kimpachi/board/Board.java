@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -73,7 +74,6 @@ public final class Board {
             return this;
         }
 
-        Board resultBoard = Board.copyOf(this);
         if (area.getStone().equals(Stone.Black)) {
             Area newBlackArea = blackArea.without(area);
 
@@ -93,17 +93,6 @@ public final class Board {
         return whiteArea;
     }
 
-    public Area getDeadArea(@NonNull Stone stone) {
-        List<Group> deadGroups = new ArrayList<>();
-        for (Group group : getArea(stone).getGroups()) {
-            if (group.isDead(this)) {
-                deadGroups.add(group);
-            }
-        }
-
-        return Area.of(stone, deadGroups);
-    }
-
     public Color getColor(@NonNull Point point) {
         if (blackArea.contains(point)) {
             return Color.Black;
@@ -114,6 +103,42 @@ public final class Board {
         }
 
         return Color.Empty;
+    }
+
+    public Area getDeadArea(@NonNull Stone stone) {
+        List<Group> deadGroups = new ArrayList<>();
+        for (Group group : getArea(stone).getGroups()) {
+            if (isDead(group)) {
+                deadGroups.add(group);
+            }
+        }
+
+        return Area.of(stone, deadGroups);
+    }
+
+    public Set<Point> getPoints(@NonNull Color color) {
+        Set<Point> colorPoints = new HashSet<>();
+        for (int x = 1; x <= 19; x++) {
+            for (int y = 1; y <= 19; y++) {
+                Point point = Point.of(x, y);
+                if (getColor(point).equals(color)) {
+                    colorPoints.add(point);
+                }
+            }
+        }
+
+        return colorPoints;
+    }
+
+    public boolean isDead(@NonNull Group group) {
+        Set<Point> neighboringPoints = group.getNeighboringPoints();
+        for (Point point : neighboringPoints) {
+            if (!isOccupied(point)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public boolean isKomi(@NonNull Point point) {
