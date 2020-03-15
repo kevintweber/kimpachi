@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.kevintweber.kimpachi.board.Board;
 import com.kevintweber.kimpachi.board.Point;
 import com.kevintweber.kimpachi.board.Stone;
+import com.kevintweber.kimpachi.board.influence.engine.InfluenceEngine;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 

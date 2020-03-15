@@ -16,7 +16,7 @@ import java.util.Set;
  */
 @EqualsAndHashCode
 @ToString
-public final class Area {
+public final class Area implements Points {
 
     private final Stone stone;
     private final ImmutableList<Group> groups;
@@ -53,8 +53,9 @@ public final class Area {
         return new Area(stone, groups);
     }
 
+    @Override
     public boolean contains(@NonNull Point point) {
-        for (Group group : groups) {
+        for (Points group : groups) {
             if (group.contains(point)) {
                 return true;
             }
@@ -63,9 +64,10 @@ public final class Area {
         return false;
     }
 
+    @Override
     public int count() {
         int count = 0;
-        for (Group group : groups) {
+        for (Points group : groups) {
             count += group.count();
         }
 
@@ -80,9 +82,20 @@ public final class Area {
         return groups;
     }
 
+    @Override
+    public Set<Point> getNeighboringPoints() {
+        Set<Point> points = new HashSet<>();
+        for (Points group : groups) {
+            points.addAll(group.getNeighboringPoints());
+        }
+
+        return points;
+    }
+
+    @Override
     public Set<Point> getPoints() {
         Set<Point> points = new HashSet<>();
-        for (Group group : groups) {
+        for (Points group : groups) {
             points.addAll(group.getPoints());
         }
 
@@ -91,7 +104,7 @@ public final class Area {
 
     public Set<Position> getPositions() {
         Set<Position> positions = new HashSet<>();
-        for (Group group : groups) {
+        for (Points group : groups) {
             for (Point point : group.getPoints()) {
                 positions.add(Position.of(stone, point));
             }
@@ -111,8 +124,31 @@ public final class Area {
         return new Area(stone, Groups.associate(pointSet));
     }
 
+    @Override
+    public boolean isAdjacent(@NonNull Point point) {
+        for (Points group : groups) {
+            if (group.isAdjacent(point)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean isEmpty() {
         return groups.isEmpty();
+    }
+
+    @Override
+    public boolean isIntersecting(@NonNull Points otherPoints) {
+        for (Points group : groups) {
+            if (group.isIntersecting(otherPoints)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public Area union(@NonNull Area otherArea) {

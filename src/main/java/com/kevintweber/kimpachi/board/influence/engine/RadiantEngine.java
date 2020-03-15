@@ -1,24 +1,25 @@
-package com.kevintweber.kimpachi.board.influence;
+package com.kevintweber.kimpachi.board.influence.engine;
 
 import com.kevintweber.kimpachi.board.Board;
 import com.kevintweber.kimpachi.board.Color;
 import com.kevintweber.kimpachi.board.Point;
 import com.kevintweber.kimpachi.board.Stone;
-import com.kevintweber.kimpachi.board.influence.algorithm.InfluenceAlgorithm;
+import com.kevintweber.kimpachi.board.influence.algorithm.RadiantAlgorithm;
 import lombok.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public final class InfluenceEngine {
+public final class RadiantEngine implements InfluenceEngine {
 
-    private final InfluenceAlgorithm algorithm;
+    private final RadiantAlgorithm algorithm;
 
-    public InfluenceEngine(@NonNull InfluenceAlgorithm algorithm) {
+    public RadiantEngine(@NonNull RadiantAlgorithm algorithm) {
         this.algorithm = algorithm;
     }
 
+    @Override
     public Map<Point, Integer> calculate(
             @NonNull Stone stone,
             @NonNull Board board) {
@@ -39,6 +40,4 @@ public final class InfluenceEngine {
 
         return results;
     }
-
-
 }

@@ -130,7 +130,7 @@ public final class Board {
         return colorPoints;
     }
 
-    public boolean isDead(@NonNull Group group) {
+    public boolean isDead(@NonNull Points group) {
         Set<Point> neighboringPoints = group.getNeighboringPoints();
         for (Point point : neighboringPoints) {
             if (!isOccupied(point)) {

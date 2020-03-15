@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 
 @Data
-public final class Linear implements InfluenceAlgorithm {
+public final class LinearRadiantAlgorithm implements RadiantAlgorithm {
 
     private final BigDecimal factor;
 
-    public Linear(@NonNull BigDecimal factor) {
+    public LinearRadiantAlgorithm(@NonNull BigDecimal factor) {
         if (factor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Linear algorithm factor must not be less than or equal to zero: " + factor.toPlainString());
         }

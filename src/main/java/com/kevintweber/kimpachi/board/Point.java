@@ -6,12 +6,14 @@ import lombok.Data;
 import lombok.NonNull;
 
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A coordinate on the board.
  */
 @Data
-public final class Point implements Comparable<Point> {
+public final class Point implements Comparable<Point>, Points {
 
     public final static String sgfCharacters = "abcdefghijklmnopqrs";
 
@@ -43,6 +45,44 @@ public final class Point implements Comparable<Point> {
         return of(x, y);
     }
 
+    @Override
+    public boolean contains(@NonNull Point point) {
+        return point.equals(this);
+    }
+
+    @Override
+    public int count() {
+        return 1;
+    }
+
+    @Override
+    public Set<Point> getPoints() {
+        return Set.of(this);
+    }
+
+    @Override
+    public Set<Point> getNeighboringPoints() {
+        Set<Point> pointSet = new HashSet<>();
+        addPositionToPointSet(pointSet, x + 1, y);
+        addPositionToPointSet(pointSet, x - 1, y);
+        addPositionToPointSet(pointSet, x, y + 1);
+        addPositionToPointSet(pointSet, x, y - 1);
+
+        return pointSet;
+    }
+
+    private Set<Point> addPositionToPointSet(Set<Point> points, int x, int y) {
+        try {
+            Point point = Point.of(x, y);
+            points.add(point);
+        } catch (Exception e) {
+            // Do nothing.
+        }
+
+        return points;
+    }
+
+    @Override
     public boolean isAdjacent(@NonNull Point otherPoint) {
         if (equals(otherPoint)) {
             return false;
@@ -55,6 +95,16 @@ public final class Point implements Comparable<Point> {
         }
 
         return y == otherY && Math.abs(x - otherX) == 1;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public boolean isIntersecting(@NonNull Points otherGroup) {
+        return otherGroup.contains(this);
     }
 
     @Override

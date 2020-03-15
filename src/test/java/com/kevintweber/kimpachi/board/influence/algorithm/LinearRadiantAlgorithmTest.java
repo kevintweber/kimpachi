@@ -10,13 +10,13 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class LinearTest {
+class LinearRadiantAlgorithmTest {
 
     @ParameterizedTest
     @MethodSource("getInfluenceDataProvider")
     void getInfluence(Point testPoint, BigDecimal factor, int expectedInfluence) {
         Point source = Point.of(1, 1);
-        Linear linearAlgorithm = new Linear(factor);
+        LinearRadiantAlgorithm linearAlgorithm = new LinearRadiantAlgorithm(factor);
 
         int influence = linearAlgorithm.getInfluence(source, testPoint);
 

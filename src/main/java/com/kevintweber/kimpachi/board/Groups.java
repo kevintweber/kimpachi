@@ -39,7 +39,7 @@ public final class Groups {
         return ImmutableList.copyOf(resultList);
     }
 
-    public static List<Group> intersection(@NonNull Group group, @NonNull Group otherGroup) {
+    public static List<Group> intersection(@NonNull Points group, @NonNull Points otherGroup) {
         Set<Point> points = new HashSet<>(group.getPoints());
         Set<Point> otherPoints = new HashSet<>(otherGroup.getPoints());
 
@@ -48,7 +48,7 @@ public final class Groups {
         return associate(points);
     }
 
-    public static List<Group> union(@NonNull Group group, @NonNull Group otherGroup) {
+    public static List<Group> union(@NonNull Points group, @NonNull Points otherGroup) {
         Set<Point> points = new HashSet<>(group.getPoints());
         Set<Point> otherPoints = new HashSet<>(otherGroup.getPoints());
 

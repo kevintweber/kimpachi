@@ -20,7 +20,7 @@ import java.util.Set;
  */
 @EqualsAndHashCode
 @ToString
-public final class Group {
+public final class Group implements Points {
 
     private final ImmutableSet<Point> points;
 
@@ -70,10 +70,12 @@ public final class Group {
         }
     }
 
+    @Override
     public boolean contains(@NonNull Point point) {
         return points.contains(point);
     }
 
+    @Override
     public int count() {
         return points.size();
     }
@@ -108,31 +110,17 @@ public final class Group {
     private Set<Point> enlargePoint(Point point) {
         Set<Point> enlargedGroup = new HashSet<>();
         enlargedGroup.add(point);
-        int x = point.getX();
-        int y = point.getY();
-        enlargedGroup.addAll(addPositionToArea(enlargedGroup, x - 1, y));
-        enlargedGroup.addAll(addPositionToArea(enlargedGroup, x + 1, y));
-        enlargedGroup.addAll(addPositionToArea(enlargedGroup, x, y - 1));
-        enlargedGroup.addAll(addPositionToArea(enlargedGroup, x, y + 1));
+        enlargedGroup.addAll(point.getNeighboringPoints());
 
         return enlargedGroup;
     }
 
-    private Set<Point> addPositionToArea(Set<Point> points, int x, int y) {
-        try {
-            Point point = Point.of(x, y);
-            points.add(point);
-        } catch (Exception e) {
-            // Do nothing.
-        }
-
-        return points;
-    }
-
+    @Override
     public Set<Point> getPoints() {
         return points;
     }
 
+    @Override
     public Set<Point> getNeighboringPoints() {
         Set<Point> enlargedGroupPoints = new HashSet<>(
                 enlarge().getPoints()
@@ -143,6 +131,7 @@ public final class Group {
         return enlargedGroupPoints;
     }
 
+    @Override
     public boolean isAdjacent(@NonNull Point point) {
         if (contains(point)) {
             return false;
@@ -157,11 +146,13 @@ public final class Group {
         return false;
     }
 
+    @Override
     public boolean isEmpty() {
         return false;
     }
 
-    public boolean isIntersecting(@NonNull Group otherGroup) {
+    @Override
+    public boolean isIntersecting(@NonNull Points otherGroup) {
         if (otherGroup.equals(this)) {
             return true;
         }
