@@ -16,7 +16,7 @@ class AreaTest {
                 .isTrue();
         assertThat(area.contains(Point.of(12,12)))
                 .isFalse();
-        assertThat(area.count())
+        assertThat(area.size())
                 .isEqualTo(4);
 
         Area area2 = Area.of(Stone.Black, List.of());

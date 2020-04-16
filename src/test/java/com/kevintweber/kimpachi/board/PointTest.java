@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,6 +69,45 @@ class PointTest {
         assertThatThrownBy(() -> Point.fromSgf("asdf"))
                 .as("Checking invalid coordinates")
                 .isInstanceOf(SgfException.class);
+    }
+
+    @Test
+    void contains() {
+        Point test = Point.of(1, 2);
+        Point testCopy = Point.of(1, 2);
+        Point anotherPoint = Point.of(2, 3);
+
+        assertThat(test.contains(test))
+                .isTrue();
+        assertThat(test.contains(testCopy))
+                .isTrue();
+        assertThat(test.contains(anotherPoint))
+                .isFalse();
+    }
+
+    @Test
+    void count() {
+        Point test = Point.of(1, 2);
+        assertThat(test.size())
+                .isEqualTo(1);
+    }
+
+    @Test
+    void getPoints() {
+        Point test = Point.of(1, 2);
+        assertThat(test.getPoints())
+                .isEqualTo(Set.of(test));
+    }
+
+    @Test
+    void getNeighboringPoints() {
+        Point test = Point.of(1, 2);
+        assertThat(test.getNeighboringPoints())
+                .isEqualTo(Set.of(
+                        Point.of(1, 1),
+                        Point.of(1, 3),
+                        Point.of(2, 2)
+                ));
     }
 
     @ParameterizedTest

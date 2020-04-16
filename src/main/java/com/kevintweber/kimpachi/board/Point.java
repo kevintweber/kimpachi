@@ -51,7 +51,7 @@ public final class Point implements Comparable<Point>, Points {
     }
 
     @Override
-    public int count() {
+    public int size() {
         return 1;
     }
 
@@ -71,15 +71,13 @@ public final class Point implements Comparable<Point>, Points {
         return pointSet;
     }
 
-    private Set<Point> addPositionToPointSet(Set<Point> points, int x, int y) {
+    private void addPositionToPointSet(Set<Point> points, int x, int y) {
         try {
             Point point = Point.of(x, y);
             points.add(point);
         } catch (Exception e) {
             // Do nothing.
         }
-
-        return points;
     }
 
     @Override

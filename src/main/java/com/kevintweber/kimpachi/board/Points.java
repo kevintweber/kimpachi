@@ -8,8 +8,6 @@ public interface Points {
 
     boolean contains(@NonNull Point point);
 
-    int count();
-
     Set<Point> getPoints();
 
     Set<Point> getNeighboringPoints();
@@ -19,5 +17,7 @@ public interface Points {
     boolean isEmpty();
 
     boolean isIntersecting(@NonNull Points otherGroup);
+
+    int size();
 
 }

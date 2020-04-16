@@ -46,7 +46,7 @@ class GroupTest {
         assertThat(group.isEmpty())
                 .as("Checking isEmpty")
                 .isFalse();
-        assertThat(group.count())
+        assertThat(group.size())
                 .as("Checking count")
                 .isEqualTo(3);
     }
@@ -115,7 +115,7 @@ class GroupTest {
         assertThat(group.isEmpty())
                 .as("Checking isEmpty")
                 .isFalse();
-        assertThat(group.count())
+        assertThat(group.size())
                 .as("Checking count")
                 .isEqualTo(1);
 
@@ -133,7 +133,7 @@ class GroupTest {
         assertThat(enlargedGroup.isEmpty())
                 .as("Checking isEmpty")
                 .isFalse();
-        assertThat(enlargedGroup.count())
+        assertThat(enlargedGroup.size())
                 .as("Checking count")
                 .isEqualTo(2);
 
@@ -152,7 +152,7 @@ class GroupTest {
     void enlargeInCenter() {
         Group group = Group.of(Set.of(Point.of(5, 5), Point.of(5, 6)));
         Group enlargedGroup = group.enlarge();
-        assertThat(enlargedGroup.count())
+        assertThat(enlargedGroup.size())
                 .as("Checking enlarged group size")
                 .isEqualTo(8);
         assertThat(enlargedGroup.getPoints())
@@ -173,7 +173,7 @@ class GroupTest {
     void enlargeInCorner() {
         Group group = Group.of(Point.of(1, 1));
         Group enlargedGroup = group.enlarge();
-        assertThat(enlargedGroup.count())
+        assertThat(enlargedGroup.size())
                 .as("Checking enlarged group size")
                 .isEqualTo(3);
         assertThat(enlargedGroup.getPoints())
@@ -189,7 +189,7 @@ class GroupTest {
     void enlargeMultipleTimes() {
         Group group = Group.of(Point.of(1, 1));
         Group enlargedGroup = group.enlarge(2);
-        assertThat(enlargedGroup.count())
+        assertThat(enlargedGroup.size())
                 .as("Checking enlarged group size")
                 .isEqualTo(6);
         assertThat(enlargedGroup.getPoints())
@@ -216,7 +216,7 @@ class GroupTest {
     void enlargeManyTimes() {
         Group group = Group.of(Point.of(9, 9));
         Group enlargedGroup = group.enlarge(100);
-        assertThat(enlargedGroup.count())
+        assertThat(enlargedGroup.size())
                 .as("Checking enlarged group size")
                 .isEqualTo(361);
     }

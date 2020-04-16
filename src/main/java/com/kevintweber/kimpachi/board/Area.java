@@ -64,16 +64,6 @@ public final class Area implements Points {
         return false;
     }
 
-    @Override
-    public int count() {
-        int count = 0;
-        for (Points group : groups) {
-            count += group.count();
-        }
-
-        return count;
-    }
-
     public Stone getStone() {
         return stone;
     }
@@ -149,6 +139,16 @@ public final class Area implements Points {
         }
 
         return false;
+    }
+
+    @Override
+    public int size() {
+        int count = 0;
+        for (Points group : groups) {
+            count += group.size();
+        }
+
+        return count;
     }
 
     public Area union(@NonNull Area otherArea) {

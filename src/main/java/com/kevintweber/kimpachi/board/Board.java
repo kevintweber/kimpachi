@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @EqualsAndHashCode
-public final class Board {
+public final class Board implements Printable {
 
     public final static String positionCharacters = "ABCDEFGHJKLMNOPQRST";
 
@@ -193,6 +193,7 @@ public final class Board {
         return new Board(blackArea.without(point), whiteArea.with(point));
     }
 
+    @Override
     public String print() {
         StringBuilder sb = new StringBuilder("    ");
         for (int i = 0; i < 19; i++) {

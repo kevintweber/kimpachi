@@ -1,10 +1,8 @@
 package com.kevintweber.kimpachi.board;
 
-import com.google.common.collect.ImmutableSet;
 import com.kevintweber.kimpachi.exception.UnconnectedException;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.ToString;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
@@ -19,13 +17,12 @@ import java.util.Set;
  * There is no such thing as an empty group.
  */
 @EqualsAndHashCode
-@ToString
 public final class Group implements Points {
 
-    private final ImmutableSet<Point> points;
+    private final PointSet pointSet;
 
     private Group(@NonNull Point point) {
-        this.points = ImmutableSet.of(point);
+        this.pointSet = PointSet.of(point);
     }
 
     private Group(@NonNull Set<Point> points) {
@@ -33,7 +30,7 @@ public final class Group implements Points {
             throw new IllegalArgumentException("Group must not be empty.");
         }
 
-        this.points = ImmutableSet.copyOf(points);
+        this.pointSet = PointSet.of(points);
         checkConnected();
     }
 
@@ -46,16 +43,16 @@ public final class Group implements Points {
     }
 
     public static Group copyOf(@NonNull Group otherGroup) {
-        return new Group(otherGroup.points);
+        return new Group(otherGroup.getPoints());
     }
 
     private void checkConnected() {
-        if (points.size() <= 1) {
+        if (pointSet.size() <= 1) {
             return;
         }
 
         Graph<Point, DefaultEdge> graph = new SimpleGraph<>(DefaultEdge.class);
-        for (Point point : points) {
+        for (Point point : pointSet.getPoints()) {
             graph.addVertex(point);
             for (Point addedPoint : graph.vertexSet()) {
                 if (point.isAdjacent(addedPoint)) {
@@ -72,12 +69,7 @@ public final class Group implements Points {
 
     @Override
     public boolean contains(@NonNull Point point) {
-        return points.contains(point);
-    }
-
-    @Override
-    public int count() {
-        return points.size();
+        return pointSet.contains(point);
     }
 
     public Group enlarge() {
@@ -117,33 +109,17 @@ public final class Group implements Points {
 
     @Override
     public Set<Point> getPoints() {
-        return points;
+        return pointSet.getPoints();
     }
 
     @Override
     public Set<Point> getNeighboringPoints() {
-        Set<Point> enlargedGroupPoints = new HashSet<>(
-                enlarge().getPoints()
-        );
-
-        enlargedGroupPoints.removeAll(getPoints());
-
-        return enlargedGroupPoints;
+        return pointSet.getNeighboringPoints();
     }
 
     @Override
     public boolean isAdjacent(@NonNull Point point) {
-        if (contains(point)) {
-            return false;
-        }
-
-        for (Point innerPoint : points) {
-            if (point.isAdjacent(innerPoint)) {
-                return true;
-            }
-        }
-
-        return false;
+        return pointSet.isAdjacent(point);
     }
 
     @Override
@@ -153,16 +129,12 @@ public final class Group implements Points {
 
     @Override
     public boolean isIntersecting(@NonNull Points otherGroup) {
-        if (otherGroup.equals(this)) {
-            return true;
-        }
+        return pointSet.isIntersecting(otherGroup);
+    }
 
-        Set<Point> ownPoints = new HashSet<>(getPoints());
-        Set<Point> otherPoints = otherGroup.getPoints();
-
-        ownPoints.retainAll(otherPoints);
-
-        return !ownPoints.isEmpty();
+    @Override
+    public int size() {
+        return pointSet.size();
     }
 
     public Group with(@NonNull Point point) {
@@ -174,9 +146,16 @@ public final class Group implements Points {
             throw new UnconnectedException("Point is non-adjacent: " + point);
         }
 
-        Set<Point> enlargedGroup = new HashSet<>(points);
+        Set<Point> enlargedGroup = new HashSet<>(pointSet.getPoints());
         enlargedGroup.add(point);
 
         return new Group(enlargedGroup);
+    }
+
+    @Override
+    public String toString() {
+        return "Group(" +
+                "points=" + pointSet.getPoints().toString() +
+                ')';
     }
 }
