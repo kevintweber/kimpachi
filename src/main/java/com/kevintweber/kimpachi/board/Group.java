@@ -17,7 +17,7 @@ import java.util.Set;
  * There is no such thing as an empty group.
  */
 @EqualsAndHashCode
-public final class Group implements Points {
+public final class Group implements Points, Printable {
 
     private final PointSet pointSet;
 
@@ -150,6 +150,43 @@ public final class Group implements Points {
         enlargedGroup.add(point);
 
         return new Group(enlargedGroup);
+    }
+
+    @Override
+    public String print() {
+        Komi komi = Komi.KOMI;
+        StringBuilder sb = new StringBuilder("    ");
+        for (int i = 0; i < 19; i++) {
+            sb.append(Board.positionCharacters.charAt(i));
+            sb.append(" ");
+        }
+
+        sb.append("\n");
+
+        for (int y = 19; y >= 1; y--) {
+            sb.append(y);
+            sb.append("  ");
+            if (y < 10) {
+                sb.append(" ");
+            }
+
+            for (int x = 1; x <= 19; x++) {
+                Point point = Point.of(x, y);
+                if (contains(point)) {
+                    sb.append("# ");
+                } else {
+                    if (komi.isKomi(point)) {
+                        sb.append("+ ");
+                    } else {
+                        sb.append(". ");
+                    }
+                }
+            }
+
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
     @Override

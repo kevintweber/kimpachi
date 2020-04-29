@@ -35,18 +35,24 @@ public final class Handicap {
     }
 
     private static Set<Point> getHandicapList2Thru4(int handicap) {
+        // TODO
+
         return Set.of(
                 Point.of(3, 3)
         );
     }
 
     private static Set<Point> getHandicapList5Thru7(int handicap) {
+        // TODO
+
         return Set.of(
                 Point.of(4, 4)
         );
     }
 
     private static Set<Point> getHandicapOver8(int handicap) {
+        // TODO
+
         return Set.of(
                 Point.of(4, 4)
         );

@@ -42,12 +42,12 @@ public final class AugmentedPointSet<T> implements Points {
         return points.keySet();
     }
 
-    public T get(@NonNull Point point, T nullValue) {
+    public T get(@NonNull Point point, T defaultValue) {
         if (contains(point)) {
             return points.get(point);
         }
 
-        return nullValue;
+        return defaultValue;
     }
 
     public Map<Point, T> getPointMap() {
@@ -80,7 +80,12 @@ public final class AugmentedPointSet<T> implements Points {
         return pointSet.isIntersecting(otherPointSet);
     }
 
-    public AugmentedPointSet<T> put(
+    @Override
+    public int size() {
+        return points.size();
+    }
+
+    public AugmentedPointSet<T> with(
             @NonNull Point point,
             @NonNull T value) {
         Map<Point, T> pointMap = new HashMap<>(points);
@@ -89,7 +94,7 @@ public final class AugmentedPointSet<T> implements Points {
         return new AugmentedPointSet<>(pointMap);
     }
 
-    public AugmentedPointSet<T> remove(@NonNull Point point) {
+    public AugmentedPointSet<T> without(@NonNull Point point) {
         if (!points.containsKey(point)) {
             return this;
         }
@@ -98,10 +103,5 @@ public final class AugmentedPointSet<T> implements Points {
         pointMap.remove(point);
 
         return new AugmentedPointSet<>(pointMap);
-    }
-
-    @Override
-    public int size() {
-        return points.size();
     }
 }

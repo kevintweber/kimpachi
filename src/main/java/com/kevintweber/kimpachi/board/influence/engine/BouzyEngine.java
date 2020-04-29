@@ -87,9 +87,9 @@ public final class BouzyEngine implements InfluenceEngine {
                 }
 
                 if (newPointValue == 0) {
-                    bouzyBoard = bouzyBoard.remove(point);
+                    bouzyBoard = bouzyBoard.without(point);
                 } else {
-                    bouzyBoard = bouzyBoard.put(point, newPointValue);
+                    bouzyBoard = bouzyBoard.with(point, newPointValue);
                 }
             }
         }
@@ -130,9 +130,9 @@ public final class BouzyEngine implements InfluenceEngine {
                 }
 
                 if (newPointValue == 0) {
-                    bouzyBoard = bouzyBoard.remove(point);
+                    bouzyBoard = bouzyBoard.without(point);
                 } else {
-                    bouzyBoard = bouzyBoard.put(point, newPointValue);
+                    bouzyBoard = bouzyBoard.with(point, newPointValue);
                 }
             }
         }
@@ -144,13 +144,13 @@ public final class BouzyEngine implements InfluenceEngine {
                 Point point = Point.of(x, y);
                 Color color = board.getColor(point);
                 if (color.equals(Color.Black)) {
-                    bouzyBoard = bouzyBoard.put(point, 128);
+                    bouzyBoard = bouzyBoard.with(point, 128);
 
                     continue;
                 }
 
                 if (color.equals(Color.White)) {
-                    bouzyBoard = bouzyBoard.put(point, -128);
+                    bouzyBoard = bouzyBoard.with(point, -128);
                 }
             }
         }
