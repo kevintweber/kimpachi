@@ -36,6 +36,10 @@ public final class BouzyEngine implements InfluenceEngine {
     public Map<Point, Integer> calculate(
             @NonNull Stone stone,
             @NonNull Board board) {
+        if (board.isEmpty()) {
+            return Map.of();
+        }
+
         initialize(board);
         for (int d = 0; d < dilations; d++) {
             dilate();

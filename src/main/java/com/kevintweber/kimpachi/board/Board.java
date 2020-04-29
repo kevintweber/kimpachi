@@ -141,6 +141,10 @@ public final class Board implements Printable {
         return true;
     }
 
+    public boolean isEmpty() {
+        return equals(EMPTY);
+    }
+
     public boolean isKomi(@NonNull Point point) {
         return komi.isKomi(point);
     }

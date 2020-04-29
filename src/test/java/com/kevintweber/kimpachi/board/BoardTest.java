@@ -15,6 +15,8 @@ class BoardTest {
         assertThat(board1)
                 .as("Checking empty board")
                 .isSameAs(board2);
+        assertThat(board1.isEmpty())
+                .isTrue();
     }
 
     @Test
@@ -27,9 +29,13 @@ class BoardTest {
         assertThat(board.isOccupied(point))
                 .as("Checking position is not occupied")
                 .isFalse();
+        assertThat(board.isEmpty())
+                .isTrue();
 
         Move blackMove = Move.normalMove(Stone.Black, point);
         Board nextBoard = board.withMove(blackMove, Prisoners.empty());
+        assertThat(nextBoard.isEmpty())
+                .isFalse();
         assertThat(nextBoard)
                 .as("Checking boards are immutable")
                 .isNotEqualTo(board);

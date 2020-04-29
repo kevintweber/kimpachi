@@ -13,7 +13,7 @@ import java.util.Set;
  * A coordinate on the board.
  */
 @Data
-public final class Point implements Comparable<Point>, Points {
+public final class Point implements Comparable<Point>, Points, Printable {
 
     public final static String sgfCharacters = "abcdefghijklmnopqrs";
 
@@ -103,6 +103,43 @@ public final class Point implements Comparable<Point>, Points {
     @Override
     public boolean isIntersecting(@NonNull Points otherGroup) {
         return otherGroup.contains(this);
+    }
+
+    @Override
+    public String print() {
+        Komi komi = Komi.KOMI;
+        StringBuilder sb = new StringBuilder("    ");
+        for (int i = 0; i < 19; i++) {
+            sb.append(Board.positionCharacters.charAt(i));
+            sb.append(" ");
+        }
+
+        sb.append("\n");
+
+        for (int y = 19; y >= 1; y--) {
+            sb.append(y);
+            sb.append("  ");
+            if (y < 10) {
+                sb.append(" ");
+            }
+
+            for (int x = 1; x <= 19; x++) {
+                Point point = Point.of(x, y);
+                if (equals(point)) {
+                    sb.append("# ");
+                } else {
+                    if (komi.isKomi(point)) {
+                        sb.append("+ ");
+                    } else {
+                        sb.append(". ");
+                    }
+                }
+            }
+
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
     @Override

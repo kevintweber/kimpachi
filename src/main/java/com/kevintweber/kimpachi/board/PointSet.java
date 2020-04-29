@@ -10,12 +10,16 @@ import java.util.Set;
 
 /**
  * A PointSet is a set of points.
+ *
+ * The PointSet can contain 0 or more points.  The points can be of any position.
  */
 @EqualsAndHashCode
 @ToString
-public final class PointSet implements Points {
+public final class PointSet implements Points, Printable {
 
     private final ImmutableSet<Point> points;
+
+    private static final PointSet EMPTY = new PointSet(Set.of());
 
     private PointSet(@NonNull Point point) {
         this.points = ImmutableSet.of(point);
@@ -25,11 +29,19 @@ public final class PointSet implements Points {
         this.points = ImmutableSet.copyOf(points);
     }
 
+    public static PointSet empty() {
+        return EMPTY;
+    }
+
     public static PointSet of(@NonNull Point point) {
         return new PointSet(point);
     }
 
     public static PointSet of(@NonNull Set<Point> points) {
+        if (points.isEmpty()) {
+            return EMPTY;
+        }
+
         return new PointSet(points);
     }
 
@@ -50,6 +62,8 @@ public final class PointSet implements Points {
             neighboringPoints.addAll(point.getNeighboringPoints());
         }
 
+        neighboringPoints.removeAll(points);
+
         return neighboringPoints;
     }
 
@@ -66,7 +80,7 @@ public final class PointSet implements Points {
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return points.isEmpty();
     }
 
     @Override
@@ -84,7 +98,7 @@ public final class PointSet implements Points {
         return points.size();
     }
 
-    public PointSet with(Point point) {
+    public PointSet with(@NonNull Point point) {
         if (contains(point)) {
             return this;
         }
@@ -95,7 +109,7 @@ public final class PointSet implements Points {
         return new PointSet(enlargedPointSet);
     }
 
-    public PointSet without(Point point) {
+    public PointSet without(@NonNull Point point) {
         if (!contains(point)) {
             return this;
         }
@@ -103,6 +117,47 @@ public final class PointSet implements Points {
         Set<Point> reducedPointSet = new HashSet<>(points);
         reducedPointSet.remove(point);
 
+        if (reducedPointSet.isEmpty()) {
+            return EMPTY;
+        }
+
         return new PointSet(reducedPointSet);
+    }
+
+    @Override
+    public String print() {
+        Komi komi = Komi.KOMI;
+        StringBuilder sb = new StringBuilder("    ");
+        for (int i = 0; i < 19; i++) {
+            sb.append(Board.positionCharacters.charAt(i));
+            sb.append(" ");
+        }
+
+        sb.append("\n");
+
+        for (int y = 19; y >= 1; y--) {
+            sb.append(y);
+            sb.append("  ");
+            if (y < 10) {
+                sb.append(" ");
+            }
+
+            for (int x = 1; x <= 19; x++) {
+                Point point = Point.of(x, y);
+                if (points.contains(point)) {
+                    sb.append("# ");
+                } else {
+                    if (komi.isKomi(point)) {
+                        sb.append("+ ");
+                    } else {
+                        sb.append(". ");
+                    }
+                }
+            }
+
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 }
