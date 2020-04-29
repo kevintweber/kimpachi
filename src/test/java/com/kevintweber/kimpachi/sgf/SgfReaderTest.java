@@ -67,7 +67,7 @@ class SgfReaderTest {
         assertThat(game.getTurns())
                 .as("Checking number of moves")
                 .hasSize(185);
-        assertThat(game.printBoard())
+        assertThat(game.print())
                 .as("Checking board is in correct state.")
                 .isEqualTo("    A B C D E F G H J K L M N O P Q R S T \n" +
                         "19  . . . . . . . . . . . . . . . . . . . \n" +

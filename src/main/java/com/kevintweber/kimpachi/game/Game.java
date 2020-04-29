@@ -1,9 +1,6 @@
 package com.kevintweber.kimpachi.game;
 
-import com.kevintweber.kimpachi.board.Area;
-import com.kevintweber.kimpachi.board.Board;
-import com.kevintweber.kimpachi.board.Move;
-import com.kevintweber.kimpachi.board.Stone;
+import com.kevintweber.kimpachi.board.*;
 import com.kevintweber.kimpachi.rules.Score;
 import lombok.NonNull;
 import org.slf4j.Logger;
@@ -13,7 +10,7 @@ import java.util.Deque;
 import java.util.Optional;
 import java.util.UUID;
 
-public final class Game {
+public final class Game implements Printable {
 
     private static final Logger logger = LoggerFactory.getLogger(Game.class);
 
@@ -117,7 +114,8 @@ public final class Game {
                 turnManager.toSgf();
     }
 
-    public String printBoard() {
+    @Override
+    public String print() {
         return turnManager.getCurrentBoard().print();
     }
 
