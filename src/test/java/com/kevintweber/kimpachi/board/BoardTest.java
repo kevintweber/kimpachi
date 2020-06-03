@@ -3,6 +3,9 @@ package com.kevintweber.kimpachi.board;
 import com.kevintweber.kimpachi.game.Prisoners;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class BoardTest {
@@ -65,12 +68,63 @@ class BoardTest {
     }
 
     @Test
+    void noDeadAreas() {
+        Board board = (new Board.Builder())
+                .add(
+                        Stone.Black,
+                        Set.of(
+                                Point.of(2,2),
+                                Point.of(2,3),
+                                Point.of(2,4),
+                                Point.of(3,4),
+                                Point.of(4,4),
+                                Point.of(4, 3),
+                                Point.of(4, 2),
+                                Point.of(3, 2)
+                        )
+                )
+                .build();
+
+        assertThat(board.getDeadArea(Stone.White))
+                .isEqualTo(Area.empty(Stone.White));
+        assertThat(board.getDeadArea(Stone.Black))
+                .isEqualTo(Area.empty(Stone.Black));
+    }
+
+    @Test
+    void oneDeadArea() {
+        Board board = (new Board.Builder())
+                .add(
+                        Stone.Black,
+                        Set.of(
+                                Point.of(2,2),
+                                Point.of(2,3),
+                                Point.of(2,4),
+                                Point.of(3,4),
+                                Point.of(4,4),
+                                Point.of(4, 3),
+                                Point.of(4, 2),
+                                Point.of(3, 2)
+                        )
+                )
+                .add(Position.of(Stone.White, Point.of(3,3)))
+                .build();
+
+        Group deadWhiteGroup = Group.of(Point.of(3,3));
+        Area deadWhiteArea = Area.of(Stone.White, List.of(deadWhiteGroup));
+        assertThat(board.getDeadArea(Stone.White))
+                .isEqualTo(deadWhiteArea);
+        assertThat(board.getDeadArea(Stone.Black))
+                .isEqualTo(Area.empty(Stone.Black));
+    }
+
+    @Test
     void print() {
         Board board = Board.empty();
         Point point = Point.of(1, 1);
         Move blackMove = Move.normalMove(Stone.Black, point);
         Board nextBoard = board.withMove(blackMove, Prisoners.empty());
-        Move whiteMove = Move.normalMove(Stone.White, Point.of(4,4));
+        Move whiteMove = Move.normalMove(Stone.White, Point.of(4, 4));
         nextBoard = nextBoard.withMove(whiteMove, Prisoners.empty());
         assertThat(nextBoard.print())
                 .as("Checking printing the board.")

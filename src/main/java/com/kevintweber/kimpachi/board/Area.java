@@ -181,6 +181,17 @@ public final class Area implements Points {
         return with(position.getPoint());
     }
 
+    public Area with(@NonNull Set<Point> points) {
+        if (points.isEmpty()) {
+            return this;
+        }
+
+        Set<Point> currentPoints = getPoints();
+        currentPoints.addAll(points);
+
+        return new Area(stone, Groups.associate(currentPoints));
+    }
+
     public Area without(@NonNull Area area) {
         if (!stone.equals(area.getStone())) {
             throw new InvalidStoneException("Invalid stone: " + area.getStone());

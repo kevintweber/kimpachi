@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The primary board type.
+ */
 @EqualsAndHashCode
 public final class Board implements Printable {
 
@@ -130,7 +133,7 @@ public final class Board implements Printable {
         return colorPoints;
     }
 
-    public boolean isDead(@NonNull Points group) {
+    private boolean isDead(@NonNull Group group) {
         Set<Point> neighboringPoints = group.getNeighboringPoints();
         for (Point point : neighboringPoints) {
             if (!isOccupied(point)) {
@@ -247,5 +250,65 @@ public final class Board implements Printable {
         return "Board{" +
                 hashCode() +
                 '}';
+    }
+
+    public static class Builder {
+        private Area blackArea;
+        private Area whiteArea;
+
+        public Builder() {
+            this.blackArea = Area.empty(Stone.Black);
+            this.whiteArea = Area.empty(Stone.White);
+        }
+
+        public Builder(@NonNull Configuration configuration) {
+            Board board = Board.of(configuration);
+            this.blackArea = board.blackArea;
+            this.whiteArea = board.whiteArea;
+        }
+
+        public Builder add(@NonNull Position position) {
+            if (position.getStone().equals(Stone.Black)) {
+                blackArea = blackArea.with(position.getPoint());
+
+                return this;
+            }
+
+            whiteArea = whiteArea.with(position.getPoint());
+
+            return this;
+        }
+
+        public Builder add(
+                @NonNull Stone stone,
+                @NonNull Set<Point> points) {
+            if (stone.equals(Stone.Black)) {
+                blackArea = blackArea.with(points);
+
+                return this;
+            }
+
+            whiteArea = whiteArea.with(points);
+
+            return this;
+        }
+
+        public Builder remove(@NonNull Point point) {
+            blackArea = blackArea.without(point);
+            whiteArea = whiteArea.without(point);
+
+            return this;
+        }
+
+        public Builder remove(@NonNull Set<Point> points) {
+            blackArea = blackArea.without(points);
+            whiteArea = whiteArea.without(points);
+
+            return this;
+        }
+
+        public Board build() {
+            return Board.of(blackArea, whiteArea);
+        }
     }
 }

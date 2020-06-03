@@ -15,6 +15,8 @@ import java.util.Set;
  * A Group is a set of connected points.
  * <p>
  * There is no such thing as an empty group.
+ * <p>
+ * This class exists in order to handle a group of points that lives and dies together.
  */
 @EqualsAndHashCode
 public final class Group implements Points, Printable {
